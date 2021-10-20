@@ -6,7 +6,6 @@ void main() async {
   // To run codebefore runApp();
   WidgetsFlutterBinding.ensureInitialized();
   await NotificationService().init();
-
   runApp(const MyApp());
 }
 
@@ -40,8 +39,6 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       _counter++;
     });
-    // requestIOSPermissions(flutterLocalNotificationsPlugin);
-    // showNotification();
     NotificationService().scheduleNotification();
   }
 

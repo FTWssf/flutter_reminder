@@ -1,6 +1,8 @@
+import 'package:flutter/material.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:oil_palm_system/res/constant.dart';
 
 class NotificationService {
@@ -24,9 +26,9 @@ class NotificationService {
     //Initialization Settings for iOS
     const IOSInitializationSettings initializationSettingsIOS =
         IOSInitializationSettings(
-      requestSoundPermission: false,
-      requestBadgePermission: false,
-      requestAlertPermission: false,
+      requestSoundPermission: true,
+      requestBadgePermission: true,
+      requestAlertPermission: true,
     );
 
     //InitializationSettings for initializing settings for both platforms (Android & iOS)
@@ -35,6 +37,9 @@ class NotificationService {
             android: initializationSettingsAndroid,
             iOS: initializationSettingsIOS);
 
+    //initialize timezone package here
+    tz.initializeTimeZones();
+
     await flutterLocalNotificationsPlugin.initialize(
       initializationSettings,
     ); // onSelectNotification: onSelectNotification
@@ -42,22 +47,76 @@ class NotificationService {
 
   Future onSelectNotification(String payload) async {
     //Handle notification tapped logic here
+    // await Navigator.push(
+    //   context,
+    //   MaterialPageRoute<void>(builder: (context) => SecondScreen(payload)),
+    // );
+  }
+  // Future onSelectNotification(dynamic payload) async {
+  //   Navigator.of(context).push(MaterialPageRoute(builder: (_) {
+  //     return NewScreen(
+  //       payload: payload,
+  //     );
+  //   }));
+  // }
+
+  // void requestIOSPermissions() {
+  //   flutterLocalNotificationsPlugin
+  //       .resolvePlatformSpecificImplementation<
+  //           IOSFlutterLocalNotificationsPlugin>()
+  //       ?.requestPermissions(
+  //         alert: true,
+  //         badge: true,
+  //         sound: true,
+  //       );
+  // }
+
+  Future<void> requestIOSPermissions(BuildContext context) async {
+    final status = await Permission.notification.status;
+    switch (status) {
+      case PermissionStatus.denied:
+        final result = await Permission.notification.request();
+        final isPermanentlyDenied = result.isPermanentlyDenied;
+        if (result.isGranted) {
+          _showDialog(context);
+        } else if (isPermanentlyDenied) {
+          openAppSettings();
+        }
+        break;
+      case PermissionStatus.permanentlyDenied:
+        openAppSettings();
+        break;
+      case PermissionStatus.limited:
+        break;
+      case PermissionStatus.restricted:
+        break;
+      case PermissionStatus.granted:
+        _showDialog(context);
+        break;
+    }
   }
 
-  void requestIOSPermissions(
-      FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin) {
-    flutterLocalNotificationsPlugin
-        .resolvePlatformSpecificImplementation<
-            IOSFlutterLocalNotificationsPlugin>()
-        ?.requestPermissions(
-          alert: true,
-          badge: true,
-          sound: true,
+  void _showDialog(BuildContext context) {
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Notification Permission Granted'),
+          content: const Text("Permission Granted"),
+          actions: <Widget>[
+            TextButton(
+                child: const Text('Okay'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                }),
+          ],
         );
+      },
+    );
   }
 
   Future<void> scheduleNotification() async {
-    tz.initializeTimeZones();
     final dateTime = DateTime.now().add(Duration(seconds: 4));
     final scheduledNotificationDateTime =
         tz.TZDateTime.from(dateTime, tz.local);
@@ -84,12 +143,18 @@ class NotificationService {
         androidAllowWhileIdle: true);
   }
 
-  cancelNotification() async {
+  Future<void> cancelNotification() async {
     await flutterLocalNotificationsPlugin.cancel(0);
     // await flutterLocalNotificationsPlugin.cancelAll();
   }
 
-  showNotification() async {
+  Future<List> getPendingNotification() async {
+    final List<PendingNotificationRequest> pendingNotificationRequests =
+        await flutterLocalNotificationsPlugin.pendingNotificationRequests();
+    return pendingNotificationRequests;
+  }
+
+  Future<void> showNotification() async {
     const android = AndroidNotificationDetails('id', 'channel ',
         channelDescription: 'description',
         priority: Priority.high,
@@ -100,11 +165,4 @@ class NotificationService {
         0, 'Flutter devs', 'Flutter Local Notification Demo', platform,
         payload: 'Welcome to the Local Notification demo ');
   }
-  // Future onSelectNotification(dynamic payload) async {
-  //   Navigator.of(context).push(MaterialPageRoute(builder: (_) {
-  //     return NewScreen(
-  //       payload: payload,
-  //     );
-  //   }));
-  // }
 }
