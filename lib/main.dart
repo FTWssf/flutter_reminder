@@ -1,20 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:oil_palm_system/service/notification_service.dart';
+import 'package:oil_palm_system/res/constant.dart';
 
-void main() {
+void main() async {
+  // To run codebefore runApp();
+  WidgetsFlutterBinding.ensureInitialized();
+  await NotificationService().init();
+
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: Constant.appName,
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: Constant.appName),
     );
   }
 }
@@ -35,6 +40,9 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       _counter++;
     });
+    // requestIOSPermissions(flutterLocalNotificationsPlugin);
+    // showNotification();
+    NotificationService().scheduleNotification();
   }
 
   @override
@@ -54,6 +62,15 @@ class _MyHomePageState extends State<MyHomePage> {
               '$_counter',
               style: Theme.of(context).textTheme.headline4,
             ),
+            OutlinedButton(
+              style: ButtonStyle(
+                foregroundColor: MaterialStateProperty.all<Color>(Colors.blue),
+              ),
+              onPressed: () {
+                NotificationService().cancelNotification();
+              },
+              child: const Text('Cancel Notification'),
+            )
           ],
         ),
       ),
@@ -61,6 +78,23 @@ class _MyHomePageState extends State<MyHomePage> {
         onPressed: _incrementCounter,
         tooltip: 'Increment',
         child: const Icon(Icons.add),
+      ),
+    );
+  }
+}
+
+class NewScreen extends StatelessWidget {
+  String payload;
+
+  NewScreen({
+    @required this.payload = '',
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(payload),
       ),
     );
   }
