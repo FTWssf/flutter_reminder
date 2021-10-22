@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:oil_palm_system/service/notification_service.dart';
 import 'package:oil_palm_system/res/constant.dart';
+import 'package:oil_palm_system/database/helper.dart';
+import 'package:oil_palm_system/model/notification.dart' as model_notification;
+import 'package:oil_palm_system/database/notification_helper.dart';
 
 void main() async {
   // To run codebefore runApp();
@@ -35,11 +38,25 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
 
-  void _incrementCounter() {
+  void _incrementCounter() async {
     setState(() {
       _counter++;
     });
-    NotificationService().scheduleNotification();
+    // NotificationService().scheduleNotification();
+    // await Helper().initializeDatabase();
+    // Helper().createTable();
+    model_notification.Notification notification =
+        model_notification.Notification('B', 'B', 'Heal', DateTime.now());
+    await NotificationHelper().create(notification);
+
+    final results = await NotificationHelper().read();
+
+    for (var result in results!) {
+      print(result.id);
+      print(result.land);
+      print(result.action);
+      print(result.datetime);
+    }
   }
 
   @override
