@@ -4,6 +4,7 @@ import 'package:timezone/timezone.dart' as tz;
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:oil_palm_system/res/constant.dart';
+import 'package:oil_palm_system/model/notification.dart' as model_notification;
 
 class NotificationService {
   //Singleton pattern
@@ -116,14 +117,16 @@ class NotificationService {
     );
   }
 
-  Future<void> scheduleNotification() async {
-    final dateTime = DateTime.now().add(Duration(seconds: 4));
+  Future<void> scheduleNotification(
+      model_notification.Notification notification) async {
+    // final dateTime = DateTime.now().add(Duration(seconds: 1));
+    final dateTime = notification.datetime;
     final scheduledNotificationDateTime =
-        tz.TZDateTime.from(dateTime, tz.local);
+        tz.TZDateTime.from(dateTime!, tz.local);
     const androidPlatformChannelSpecifics = AndroidNotificationDetails(
       'channel id',
-      'channel name',
-      channelDescription: 'channel description',
+      '油棕',
+      channelDescription: '提醒信息',
       priority: Priority.high,
       importance: Importance.max,
       icon: Constant.androidIcon,
@@ -134,8 +137,11 @@ class NotificationService {
         iOS: iOSPlatformChannelSpecifics);
     await flutterLocalNotificationsPlugin.zonedSchedule(
         0,
-        'scheduled title',
-        'scheduled body',
+        notification.action,
+        '园主: ' +
+            (notification.name ?? '') +
+            ' 园地: ' +
+            (notification.land ?? ''),
         scheduledNotificationDateTime,
         platformChannelSpecifics,
         uiLocalNotificationDateInterpretation:
