@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
+import 'package:loading_overlay/loading_overlay.dart';
 import 'package:oil_palm_system/database/notification_helper.dart';
 import 'package:oil_palm_system/model/notification.dart' as model_notification;
 import 'package:oil_palm_system/service/notification_service.dart';
@@ -18,6 +19,7 @@ class AddScreen extends StatefulWidget {
 
 class _AddScreen extends State<AddScreen> {
   // model_notification.Notification notification ;
+  bool _isLoading = false;
   model_notification.Notification notification =
       model_notification.Notification('', '', '', null);
   DateFormat dateFormat = DateFormat("yyyy-MM-dd HH:mm:ss ");
@@ -28,72 +30,86 @@ class _AddScreen extends State<AddScreen> {
       appBar: AppBar(
         title: Text('添加'),
       ),
-      body: Padding(padding: const EdgeInsets.all(16.0), child: _body(context)),
+      body: LoadingOverlay(
+        child:
+            Padding(padding: const EdgeInsets.all(16.0), child: _body(context)),
+        isLoading: _isLoading,
+      ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          if (notification.action!.isEmpty) {
-            return showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return const AlertDialog(
-                    title: Text("请输入目的"),
-                    // content: Text("Hello World"),
-                  );
-                });
-          }
-
-          if (notification.name!.isEmpty) {
-            return showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return const AlertDialog(
-                    title: Text("请输入园主"),
-                    // content: Text("Hello World"),
-                  );
-                });
-          }
-
-          if (notification.land!.isEmpty) {
-            return showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return const AlertDialog(
-                    title: Text("请输入园地"),
-                    // content: Text("Hello World"),
-                  );
-                });
-          }
-
-          if (notification.datetime == null) {
-            return showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return const AlertDialog(
-                    title: Text("请选择提醒时间"),
-                    // content: Text("Hello World"),
-                  );
-                });
-          }
-
-          if (notification.datetime!.isBefore(DateTime.now())) {
-            return showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return const AlertDialog(
-                    title: Text("不能选择过去的时间"),
-                    // content: Text("Hello World"),
-                  );
-                });
-          }
-
-          await NotificationHelper().create(notification);
-          await NotificationService().scheduleNotification(notification);
-          Navigator.pop(context);
-        },
-        tooltip: 'Increment',
+        onPressed: _addItem,
+        tooltip: '添加',
         child: const Text('确认'),
       ),
     );
+  }
+
+  void _addItem() async {
+    if (_isLoading) return;
+    if (notification.action!.isEmpty) {
+      return showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return const AlertDialog(
+              title: Text("请输入目的"),
+              // content: Text("Hello World"),
+            );
+          });
+    }
+
+    if (notification.name!.isEmpty) {
+      return showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return const AlertDialog(
+              title: Text("请输入园主"),
+              // content: Text("Hello World"),
+            );
+          });
+    }
+
+    if (notification.land!.isEmpty) {
+      return showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return const AlertDialog(
+              title: Text("请输入园地"),
+              // content: Text("Hello World"),
+            );
+          });
+    }
+
+    if (notification.datetime == null) {
+      return showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return const AlertDialog(
+              title: Text("请选择提醒时间"),
+              // content: Text("Hello World"),
+            );
+          });
+    }
+
+    if (notification.datetime!.isBefore(DateTime.now())) {
+      return showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return const AlertDialog(
+              title: Text("不能选择过去的时间"),
+              // content: Text("Hello World"),
+            );
+          });
+    }
+
+    setState(() {
+      _isLoading = true;
+    });
+    await NotificationHelper().create(notification);
+    await NotificationService().scheduleNotification(notification);
+    setState(() {
+      _isLoading = false;
+    });
+
+    Navigator.pop(context);
   }
 
   Widget _body(context) {

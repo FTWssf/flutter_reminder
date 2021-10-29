@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 class Constant {
   // app related
   static const String appName = '油棕';
@@ -10,4 +12,19 @@ class Constant {
   // design related
   static const String theme = 'AppTheme';
   static const String locale = 'locale';
+
+  static final Map<int, Color> _amberColorMap = {
+    50: Color(0xFFFFD7C2),
+    100: Colors.amber[100] ?? Colors.amber,
+    200: Colors.amber[200] ?? Colors.amber,
+    300: Colors.amber[300] ?? Colors.amber,
+    400: Colors.amber[400] ?? Colors.amber,
+    500: Colors.amber[500] ?? Colors.amber,
+    600: Colors.amber[600] ?? Colors.amber,
+    700: Colors.amber[800] ?? Colors.amber,
+    800: Colors.amber[900] ?? Colors.amber,
+    900: Colors.amber[700] ?? Colors.amber,
+  };
+  static final MaterialColor themeColor =
+      MaterialColor(Colors.amber[300]!.value, _amberColorMap);
 }

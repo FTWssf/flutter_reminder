@@ -46,19 +46,12 @@ class NotificationService {
     ); // onSelectNotification: onSelectNotification
   }
 
-  Future onSelectNotification(String payload) async {
-    //Handle notification tapped logic here
-    // await Navigator.push(
-    //   context,
-    //   MaterialPageRoute<void>(builder: (context) => SecondScreen(payload)),
-    // );
-  }
   // Future onSelectNotification(dynamic payload) async {
-  //   Navigator.of(context).push(MaterialPageRoute(builder: (_) {
-  //     return NewScreen(
-  //       payload: payload,
-  //     );
-  //   }));
+  // Navigator.of(context).push(MaterialPageRoute(builder: (_) {
+  //   return NewScreen(
+  //     payload: payload,
+  //   );
+  // }));
   // }
 
   // void requestIOSPermissions() {

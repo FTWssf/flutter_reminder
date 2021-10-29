@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: Constant.appName,
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Constant.themeColor,
       ),
       home: const MyHomePage(title: Constant.appName),
     );
@@ -53,7 +53,7 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       _counter++;
     });
-    // NotificationService().scheduleNotification();
+    // NotificationService().showNotification();
   }
 
   void _routeAddScreen() async {
@@ -119,11 +119,21 @@ class _MyHomePageState extends State<MyHomePage> {
           return ListTile(
             title: Text(
               item?.action ?? '',
-              style: Theme.of(context).textTheme.headline5,
+              style: const TextStyle(
+                  fontSize: 24.0,
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                  decoration: TextDecoration.underline),
             ),
-            subtitle: Text(
-              '园主: ' + (item?.name ?? '') + '\n园地: ' + (item?.land ?? ''),
-              style: Theme.of(context).textTheme.headline6,
+            subtitle: Padding(
+              padding: const EdgeInsets.only(top: 3.5),
+              child: Text(
+                '园主: ' + (item?.name ?? '') + '\n园地: ' + (item?.land ?? ''),
+                style: const TextStyle(
+                  fontSize: 21.0,
+                  color: Colors.black,
+                ),
+              ),
             ),
             isThreeLine: true,
             trailing: Text(
@@ -140,7 +150,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _routeAddScreen,
-        tooltip: 'Increment',
+        tooltip: '添加',
         child: const Icon(Icons.add),
       ),
     );
