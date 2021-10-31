@@ -24,80 +24,46 @@ class _AddScreen extends State<AddScreen> {
       model_notification.Notification('', '', '', null);
   DateFormat dateFormat = DateFormat("yyyy-MM-dd HH:mm:ss ");
 
+  final GlobalKey<FormState> _formkey = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('添加'),
-      ),
-      body: LoadingOverlay(
-        child:
-            Padding(padding: const EdgeInsets.all(16.0), child: _body(context)),
-        isLoading: _isLoading,
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _addItem,
-        tooltip: '添加',
-        child: const Text('确认'),
-      ),
-    );
+    return Form(
+        key: _formkey,
+        autovalidateMode: AutovalidateMode.onUserInteraction,
+        child: Scaffold(
+          appBar: AppBar(
+            title: Text('添加'),
+          ),
+          body: LoadingOverlay(
+            child: Padding(
+                padding: const EdgeInsets.all(16.0), child: _body(context)),
+            isLoading: _isLoading,
+          ),
+          floatingActionButton: FloatingActionButton(
+            onPressed: _addItem,
+            tooltip: '添加',
+            child: const Text('确认'),
+          ),
+        ));
   }
 
   void _addItem() async {
     if (_isLoading) return;
-    if (notification.action!.isEmpty) {
-      return showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return const AlertDialog(
-              title: Text("请输入目的"),
-              // content: Text("Hello World"),
-            );
-          });
-    }
 
-    if (notification.name!.isEmpty) {
-      return showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return const AlertDialog(
-              title: Text("请输入园主"),
-              // content: Text("Hello World"),
-            );
-          });
-    }
+    // if (notification.datetime!.isBefore(DateTime.now())) {
+    //   return showDialog(
+    //       context: context,
+    //       builder: (BuildContext context) {
+    //         return const AlertDialog(
+    //           title: Text("不能选择过去的时间"),
+    //           // content: Text("Hello World"),
+    //         );
+    //       });
+    // }
 
-    if (notification.land!.isEmpty) {
-      return showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return const AlertDialog(
-              title: Text("请输入园地"),
-              // content: Text("Hello World"),
-            );
-          });
-    }
-
-    if (notification.datetime == null) {
-      return showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return const AlertDialog(
-              title: Text("请选择提醒时间"),
-              // content: Text("Hello World"),
-            );
-          });
-    }
-
-    if (notification.datetime!.isBefore(DateTime.now())) {
-      return showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return const AlertDialog(
-              title: Text("不能选择过去的时间"),
-              // content: Text("Hello World"),
-            );
-          });
+    if (!_formkey.currentState!.validate()) {
+      return;
     }
 
     setState(() {
@@ -121,57 +87,79 @@ class _AddScreen extends State<AddScreen> {
     ]);
   }
 
-  String? validate(String value, String field) {
-    if (value.isEmpty) {
-      return "请输入$field";
-    }
-    return null;
-  }
-
   Widget _action(context) {
     TextEditingController actionController = TextEditingController();
     return Column(mainAxisSize: MainAxisSize.max, children: [
-      TextField(
+      TextFormField(
         controller: actionController,
         onChanged: (value) {
           notification.action = value;
         },
         decoration: InputDecoration(hintText: '目的'),
-        //, errorText: validate(actionController.text, '目的')
+        validator: _validateAction,
       )
     ]);
+  }
+
+  String? _validateAction(String? value) {
+    if (value!.isEmpty) {
+      return "请输入目的";
+    } else if (value.length > 50) {
+      return "目的不能多过50个数字";
+    }
+    return null;
   }
 
   Widget _name(context) {
     TextEditingController nameController = TextEditingController();
     return Column(mainAxisSize: MainAxisSize.max, children: [
-      TextField(
+      TextFormField(
         controller: nameController,
         onChanged: (value) {
           notification.name = value;
         },
         decoration: InputDecoration(hintText: '园主'),
+        validator: _validateName,
       )
     ]);
+  }
+
+  String? _validateName(String? value) {
+    if (value!.isEmpty) {
+      return "请输入园主";
+    } else if (value.length > 50) {
+      return "园主不能多过50个数字";
+    }
+    return null;
   }
 
   Widget _land(context) {
     TextEditingController landController = TextEditingController();
     return Column(mainAxisSize: MainAxisSize.max, children: [
-      TextField(
+      TextFormField(
         controller: landController,
         onChanged: (value) {
           notification.land = value;
         },
         decoration: InputDecoration(hintText: '园地'),
+        validator: _validateLand,
       )
     ]);
+  }
+
+  String? _validateLand(String? value) {
+    if (value!.isEmpty) {
+      return "请输入园地";
+    } else if (value.length > 50) {
+      return "园地不能多过50个数字";
+    }
+    return null;
   }
 
   Widget _datetime(context) {
     TextEditingController dateTimeController = TextEditingController();
     return Column(mainAxisSize: MainAxisSize.max, children: [
-      TextField(
+      TextFormField(
         controller: dateTimeController,
         decoration: InputDecoration(hintText: '提醒时间'),
         readOnly: true,
@@ -187,7 +175,17 @@ class _AddScreen extends State<AddScreen> {
             dateTimeController.text = dateFormat.format(date);
           }, currentTime: DateTime.now().add(Duration(minutes: 1)));
         },
+        validator: _validateDatetime,
       )
     ]);
+  }
+
+  String? _validateDatetime(String? value) {
+    if (value!.isEmpty) {
+      return "请选择提醒时间";
+    } else if (notification.datetime!.isBefore(DateTime.now())) {
+      return "不能选择过去的时间";
+    }
+    return null;
   }
 }
