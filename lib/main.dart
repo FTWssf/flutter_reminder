@@ -6,6 +6,7 @@ import 'package:oil_palm_system/database/helper.dart';
 import 'package:oil_palm_system/model/notification.dart' as model_notification;
 import 'package:oil_palm_system/database/notification_helper.dart';
 import 'package:oil_palm_system/screen/add_screen.dart';
+import 'package:provider/provider.dart';
 
 void main() async {
   // To run codebefore runApp();
@@ -46,7 +47,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     Helper().initializeDatabase();
-    readData();
+    // readData();
   }
 
   void _incrementCounter() async {
@@ -56,14 +57,22 @@ class _MyHomePageState extends State<MyHomePage> {
     // NotificationService().showNotification();
   }
 
-  void _routeAddScreen() async {
-    Navigator.of(context).push(MaterialPageRoute(builder: (_) {
-      return AddScreen(
-        payload: '添加',
-      );
-    })).then((value) => setState(() {
-          readData();
-        }));
+  void _routeAddScreen(NotificationHelper notificationHelper) async {
+    // Navigator.of(context).push(MaterialPageRoute(builder: (_) {
+    //   return AddScreen(
+    //       // payload: '添加',
+    //       );
+    // }));
+    Navigator.push<void>(
+      context,
+      MaterialPageRoute<void>(
+        builder: (context) => ListenableProvider<NotificationHelper>.value(
+          value: notificationHelper,
+          child: AddScreen(),
+        ),
+      ),
+    );
+    //.then((value) => readData())
   }
 
   void readData() async {
@@ -73,86 +82,79 @@ class _MyHomePageState extends State<MyHomePage> {
     // model_notification.Notification notification =
     // model_notification.Notification('B', 'B', 'Heal', DateTime.now());
     // await NotificationHelper().create(notification);
-    final queryResults = await NotificationHelper().read();
-    setState(() {
-      results = queryResults;
-    });
+
+    // final queryResults = await NotificationHelper().read();
+    // setState(() {
+    // results = queryResults;
+    // });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      // body: Center(
-      //   child: Column(
-      //     mainAxisAlignment: MainAxisAlignment.center,
-      //     children: <Widget>[
-      //       const Text(
-      //         'You have pushed the button this many times:',
-      //       ),
-      //       Text(
-      //         '$_counter',
-      //         style: Theme.of(context).textTheme.headline4,
-      //       ),
-      //       OutlinedButton(
-      //         style: ButtonStyle(
-      //           foregroundColor: MaterialStateProperty.all<Color>(Colors.blue),
-      //         ),
-      //         onPressed: () {
-      //           NotificationService().cancelNotification();
-      //         },
-      //         child: const Text('Cancel Notification'),
-      //       )
-      //     ],
-      //   ),
-      // ),
-      body: ListView.separated(
-        // Let the ListView know how many items it needs to build.
-        itemCount: results?.length ?? 0,
-        // Provide a builder function. This is where the magic happens.
-        // Convert each item into a widget based on the type of item it is.
-        itemBuilder: (context, index) {
-          final item = results?[index];
-
-          return ListTile(
-            title: Text(
-              item?.action ?? '',
-              style: const TextStyle(
-                  fontSize: 24.0,
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold,
-                  decoration: TextDecoration.underline),
-            ),
-            subtitle: Padding(
-              padding: const EdgeInsets.only(top: 3.5),
-              child: Text(
-                '园主: ' + (item?.name ?? '') + '\n园地: ' + (item?.land ?? ''),
-                style: const TextStyle(
-                  fontSize: 21.0,
-                  color: Colors.black,
-                ),
-              ),
-            ),
-            isThreeLine: true,
-            trailing: Text(
-              dateFormat.format(item!.datetime ?? DateTime.now()),
-              style: Theme.of(context).textTheme.headline6,
-            ),
-          );
-        },
-        separatorBuilder: (context, index) {
-          return const Divider(
-            thickness: 1,
-          );
-        },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _routeAddScreen,
-        tooltip: '添加',
-        child: const Icon(Icons.add),
-      ),
-    );
+    return ChangeNotifierProvider(
+        create: (context) => NotificationHelper(),
+        child: Consumer<NotificationHelper>(
+            builder: (context, notificationHelper, child) => Scaffold(
+                  appBar: AppBar(
+                    title: Text(widget.title),
+                  ),
+                  body: ListView.separated(
+                    // itemCount: results?.length ?? 0,
+                    itemCount: notificationHelper.items!.length,
+                    itemBuilder: (context, index) {
+                      // final item = results?[index];
+                      final item = notificationHelper.items?[index];
+                      return ListTile(
+                        title: Text(
+                          item?.action ?? '',
+                          style: const TextStyle(
+                              fontSize: 24.0,
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                              decoration: TextDecoration.underline),
+                        ),
+                        subtitle: Padding(
+                          padding: const EdgeInsets.only(top: 3.5),
+                          child: Text(
+                            '园主: ' +
+                                (item?.name ?? '') +
+                                '\n园地: ' +
+                                (item?.land ?? ''),
+                            style: const TextStyle(
+                              fontSize: 21.0,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ),
+                        isThreeLine: true,
+                        trailing: Text(
+                          dateFormat.format(item!.datetime ?? DateTime.now()),
+                          style: Theme.of(context).textTheme.headline6,
+                        ),
+                      );
+                    },
+                    separatorBuilder: (context, index) {
+                      return const Divider(
+                        thickness: 1,
+                      );
+                    },
+                  ),
+                  floatingActionButton: FloatingActionButton(
+                    onPressed: () {
+                      Navigator.push<void>(
+                        context,
+                        MaterialPageRoute<void>(
+                          builder: (context) =>
+                              ListenableProvider<NotificationHelper>.value(
+                            value: notificationHelper,
+                            child: AddScreen(),
+                          ),
+                        ),
+                      );
+                    },
+                    tooltip: '添加',
+                    child: const Icon(Icons.add),
+                  ),
+                )));
   }
 }

@@ -1,10 +1,16 @@
+import 'package:flutter/foundation.dart';
 import 'package:oil_palm_system/model/notification.dart';
 import 'package:oil_palm_system/database/helper.dart';
 
-class NotificationHelper {
+class NotificationHelper with ChangeNotifier {
   Helper databaseHelper = Helper();
+  List<Notification>? items = [];
 
-  Future<List<Notification>?> read() async {
+  NotificationHelper() {
+    read();
+  }
+  //Future<List<Notification>?>
+  void read() async {
     final db = await databaseHelper.database;
     var objects = await db!.rawQuery('SELECT * FROM ${Notification.table} '
         'ORDER BY Id desc');
@@ -12,12 +18,15 @@ class NotificationHelper {
     List<Notification>? notifications = objects.isNotEmpty
         ? objects.map((obj) => Notification.fromMap(obj)).toList()
         : null;
-    return notifications;
+    items = notifications;
+    notifyListeners();
+    // return notifications;
   }
 
   Future<void> create(Notification notification) async {
     final db = await databaseHelper.database;
     await db!.insert(Notification.table, notification.toMap());
+    read();
   }
 
   Future<void> update(Notification notification) async {

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:loading_overlay/loading_overlay.dart';
+import 'package:provider/provider.dart';
+
 import 'package:oil_palm_system/database/notification_helper.dart';
 import 'package:oil_palm_system/model/notification.dart' as model_notification;
 import 'package:oil_palm_system/service/notification_service.dart';
@@ -69,7 +71,9 @@ class _AddScreen extends State<AddScreen> {
     setState(() {
       _isLoading = true;
     });
-    await NotificationHelper().create(notification);
+    final NotificationHelper notificationHelper =
+        Provider.of<NotificationHelper>(context, listen: false);
+    await notificationHelper.create(notification);
     await NotificationService().scheduleNotification(notification);
     setState(() {
       _isLoading = false;
