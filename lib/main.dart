@@ -3,8 +3,8 @@ import 'package:intl/intl.dart';
 import 'package:oil_palm_system/service/notification_service.dart';
 import 'package:oil_palm_system/res/constant.dart';
 import 'package:oil_palm_system/database/helper.dart';
-import 'package:oil_palm_system/model/notification.dart' as model_notification;
-import 'package:oil_palm_system/database/notification_helper.dart';
+import 'package:oil_palm_system/model/reminder.dart';
+import 'package:oil_palm_system/database/reminder_helper.dart';
 import 'package:oil_palm_system/screen/add_screen.dart';
 import 'package:provider/provider.dart';
 
@@ -40,7 +40,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
-  List<model_notification.Notification>? results;
+  List<Reminder>? results;
   DateFormat dateFormat = DateFormat("yyyy-MM-dd "); //HH:mm
 
   @override
@@ -57,7 +57,7 @@ class _MyHomePageState extends State<MyHomePage> {
     // NotificationService().showNotification();
   }
 
-  void _routeAddScreen(NotificationHelper notificationHelper) async {
+  void _routeAddScreen(ReminderHelper reminderHelper) async {
     // Navigator.of(context).push(MaterialPageRoute(builder: (_) {
     //   return AddScreen(
     //       // payload: '添加',
@@ -66,8 +66,8 @@ class _MyHomePageState extends State<MyHomePage> {
     Navigator.push<void>(
       context,
       MaterialPageRoute<void>(
-        builder: (context) => ListenableProvider<NotificationHelper>.value(
-          value: notificationHelper,
+        builder: (context) => ListenableProvider<ReminderHelper>.value(
+          value: reminderHelper,
           child: AddScreen(),
         ),
       ),
@@ -92,18 +92,20 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-        create: (context) => NotificationHelper(),
-        child: Consumer<NotificationHelper>(
-            builder: (context, notificationHelper, child) => Scaffold(
+        create: (context) => ReminderHelper(),
+        child: Consumer<ReminderHelper>(
+            builder: (context, reminderHelper, child) => Scaffold(
                   appBar: AppBar(
                     title: Text(widget.title),
                   ),
                   body: ListView.separated(
                     // itemCount: results?.length ?? 0,
-                    itemCount: notificationHelper.items!.length,
+                    itemCount: (reminderHelper.items == null
+                        ? 0
+                        : reminderHelper.items!.length),
                     itemBuilder: (context, index) {
                       // final item = results?[index];
-                      final item = notificationHelper.items?[index];
+                      final item = reminderHelper.items?[index];
                       return ListTile(
                         title: Text(
                           item?.action ?? '',
@@ -145,8 +147,8 @@ class _MyHomePageState extends State<MyHomePage> {
                         context,
                         MaterialPageRoute<void>(
                           builder: (context) =>
-                              ListenableProvider<NotificationHelper>.value(
-                            value: notificationHelper,
+                              ListenableProvider<ReminderHelper>.value(
+                            value: reminderHelper,
                             child: AddScreen(),
                           ),
                         ),

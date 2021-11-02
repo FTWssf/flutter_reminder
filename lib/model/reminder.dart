@@ -1,5 +1,5 @@
-class Notification {
-  static const String table = 'Notification';
+class Reminder {
+  static const String table = 'Reminder';
   static const String colId = 'Id';
   static const String colName = 'Name';
   static const String colLand = 'Land';
@@ -14,7 +14,7 @@ class Notification {
   DateTime? _datetime;
 
   // Constructor
-  Notification(this._name, this._land, this._action, this._datetime);
+  Reminder(this._name, this._land, this._action, this._datetime);
 
   // Getters
   int? get id => _id;
@@ -30,7 +30,7 @@ class Notification {
   set datetime(DateTime? datetime) => {_datetime = datetime};
 
   // Map
-  Notification.fromMap(dynamic obj) {
+  Reminder.fromMap(dynamic obj) {
     _id = obj[colId];
     _name = obj[colName];
     _land = obj[colLand];

@@ -4,7 +4,7 @@ import 'package:timezone/timezone.dart' as tz;
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:oil_palm_system/res/constant.dart';
-import 'package:oil_palm_system/model/notification.dart' as model_notification;
+import 'package:oil_palm_system/model/reminder.dart';
 
 class NotificationService {
   //Singleton pattern
@@ -110,14 +110,13 @@ class NotificationService {
     );
   }
 
-  Future<void> scheduleNotification(
-      model_notification.Notification notification) async {
-    // final dateTime = DateTime.now().add(Duration(seconds: 1));
-    final dateTime = notification.datetime;
+  Future<void> scheduleNotification(Reminder reminder, int insertedId) async {
+    // final dateTime = DateTime.now().add(Duration(seconds: 1));;
+    final dateTime = reminder.datetime;
     final scheduledNotificationDateTime =
         tz.TZDateTime.from(dateTime!, tz.local);
     const androidPlatformChannelSpecifics = AndroidNotificationDetails(
-      'channel id',
+      '',
       '油棕',
       channelDescription: '提醒信息',
       priority: Priority.high,
@@ -129,12 +128,9 @@ class NotificationService {
         android: androidPlatformChannelSpecifics,
         iOS: iOSPlatformChannelSpecifics);
     await flutterLocalNotificationsPlugin.zonedSchedule(
-        0,
-        notification.action,
-        '园主: ' +
-            (notification.name ?? '') +
-            ' 园地: ' +
-            (notification.land ?? ''),
+        insertedId,
+        reminder.action,
+        '园主: ' + (reminder.name ?? '') + ' 园地: ' + (reminder.land ?? ''),
         scheduledNotificationDateTime,
         platformChannelSpecifics,
         uiLocalNotificationDateInterpretation:
@@ -142,8 +138,8 @@ class NotificationService {
         androidAllowWhileIdle: true);
   }
 
-  Future<void> cancelNotification() async {
-    await flutterLocalNotificationsPlugin.cancel(0);
+  Future<void> cancelNotification(int id) async {
+    await flutterLocalNotificationsPlugin.cancel(id);
     // await flutterLocalNotificationsPlugin.cancelAll();
   }
 

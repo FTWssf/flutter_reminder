@@ -1,7 +1,7 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:oil_palm_system/res/constant.dart';
-import 'package:oil_palm_system/model/notification.dart';
+import 'package:oil_palm_system/model/reminder.dart';
 
 class Helper {
   static const dbFileName = Constant.dbFileName;
@@ -49,25 +49,25 @@ class Helper {
 
   void createTable() async {
     final db = await instance.database;
-    await db!.execute('CREATE TABLE ${Notification.table} ( '
-        '${Notification.colId} INTEGER PRIMARY KEY AUTOINCREMENT, '
-        '${Notification.colName} TEXT, '
-        '${Notification.colLand} TEXT, '
-        '${Notification.colAction} TEXT, '
-        '${Notification.colDatetime} TEXT)');
+    await db!.execute('CREATE TABLE ${Reminder.table} ( '
+        '${Reminder.colId} INTEGER PRIMARY KEY AUTOINCREMENT, '
+        '${Reminder.colName} TEXT, '
+        '${Reminder.colLand} TEXT, '
+        '${Reminder.colAction} TEXT, '
+        '${Reminder.colDatetime} TEXT)');
   }
 
   void _createTable(Database db, int newVersion) async {
-    await db.execute('CREATE TABLE ${Notification.table} ( '
-        '${Notification.colId} INTEGER PRIMARY KEY AUTOINCREMENT, '
-        '${Notification.colName} TEXT, '
-        '${Notification.colLand} TEXT, '
-        '${Notification.colAction} TEXT, '
-        '${Notification.colDatetime} TEXT)');
+    await db.execute('CREATE TABLE ${Reminder.table} ( '
+        '${Reminder.colId} INTEGER PRIMARY KEY AUTOINCREMENT, '
+        '${Reminder.colName} TEXT, '
+        '${Reminder.colLand} TEXT, '
+        '${Reminder.colAction} TEXT, '
+        '${Reminder.colDatetime} TEXT)');
   }
 
   void deleteTable() async {
     final db = await instance.database;
-    await db!.execute('DROP TABLE IF EXISTS ${Notification.table}');
+    await db!.execute('DROP TABLE IF EXISTS ${Reminder.table}');
   }
 }

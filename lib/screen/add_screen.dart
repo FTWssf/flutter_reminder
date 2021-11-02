@@ -5,14 +5,14 @@ import 'package:loading_overlay/loading_overlay.dart';
 import 'package:provider/provider.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
-import 'package:oil_palm_system/database/notification_helper.dart';
-import 'package:oil_palm_system/model/notification.dart' as model_notification;
+import 'package:oil_palm_system/database/reminder_helper.dart';
+import 'package:oil_palm_system/model/reminder.dart';
 import 'package:oil_palm_system/service/notification_service.dart';
 
 class AddScreen extends StatefulWidget {
   final String payload;
 
-  // late model_notification.Notification notification;
+  // late Reminder reminder;
 
   AddScreen({Key? key, this.payload = ''}) : super(key: key);
 
@@ -23,8 +23,7 @@ class AddScreen extends StatefulWidget {
 class _AddScreen extends State<AddScreen> {
   // model_notification.Notification notification ;
   bool _isLoading = false;
-  model_notification.Notification notification =
-      model_notification.Notification('', '', '', null);
+  Reminder reminder = Reminder('', '', '', null);
   DateFormat dateFormat = DateFormat("yyyy-MM-dd HH:mm:ss ");
 
   final GlobalKey<FormState> _formkey = GlobalKey<FormState>();
@@ -72,10 +71,15 @@ class _AddScreen extends State<AddScreen> {
     setState(() {
       _isLoading = true;
     });
-    final NotificationHelper notificationHelper =
-        Provider.of<NotificationHelper>(context, listen: false);
-    await notificationHelper.create(notification);
-    await NotificationService().scheduleNotification(notification);
+    final ReminderHelper reminderHelper =
+        Provider.of<ReminderHelper>(context, listen: false);
+    int insertedId = await reminderHelper.create(reminder);
+    await NotificationService().scheduleNotification(reminder, insertedId);
+    // notification.datetime =
+    //     notification.datetime!.add(const Duration(minutes: 1));
+    // await NotificationService().scheduleNotification(notification, insertedId);
+    // await NotificationService().cancelNotification(insertedId);
+
     setState(() {
       _isLoading = false;
     });
@@ -104,7 +108,7 @@ class _AddScreen extends State<AddScreen> {
       TextFormField(
         controller: actionController,
         onChanged: (value) {
-          notification.action = value;
+          reminder.action = value;
         },
         decoration: InputDecoration(hintText: '目的'),
         validator: _validateAction,
@@ -127,7 +131,7 @@ class _AddScreen extends State<AddScreen> {
       TextFormField(
         controller: nameController,
         onChanged: (value) {
-          notification.name = value;
+          reminder.name = value;
         },
         decoration: InputDecoration(hintText: '园主'),
         validator: _validateName,
@@ -150,7 +154,7 @@ class _AddScreen extends State<AddScreen> {
       TextFormField(
         controller: landController,
         onChanged: (value) {
-          notification.land = value;
+          reminder.land = value;
         },
         decoration: InputDecoration(hintText: '园地'),
         validator: _validateLand,
@@ -182,9 +186,9 @@ class _AddScreen extends State<AddScreen> {
           }, onConfirm: (date) {
             // print('confirm $date');
             // notification.datetime = date;
-            notification.datetime = date;
+            reminder.datetime = date;
             dateTimeController.text = dateFormat.format(date);
-          }, currentTime: DateTime.now().add(Duration(minutes: 1)));
+          }, currentTime: DateTime.now().add(const Duration(minutes: 1)));
         },
         validator: _validateDatetime,
       )
@@ -194,7 +198,7 @@ class _AddScreen extends State<AddScreen> {
   String? _validateDatetime(String? value) {
     if (value!.isEmpty) {
       return "请选择提醒时间";
-    } else if (notification.datetime!.isBefore(DateTime.now())) {
+    } else if (reminder.datetime!.isBefore(DateTime.now())) {
       return "不能选择过去的时间";
     }
     return null;
