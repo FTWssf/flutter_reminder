@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 import 'package:provider/provider.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 import 'package:oil_palm_system/database/notification_helper.dart';
 import 'package:oil_palm_system/model/notification.dart' as model_notification;
@@ -79,6 +80,12 @@ class _AddScreen extends State<AddScreen> {
       _isLoading = false;
     });
 
+    Fluttertoast.showToast(
+        msg: "添加成功",
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.green,
+        textColor: Colors.white,
+        fontSize: 16.0);
     Navigator.pop(context);
   }
 
