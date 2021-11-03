@@ -13,6 +13,11 @@ class Constant {
   static const String theme = 'AppTheme';
   static const String locale = 'locale';
 
+  // font size
+  static const double toastFontSize = 16;
+  static const double textFormFontSize = 25;
+  static const double textFormErrorFontSize = 15;
+
   static final Map<int, Color> _amberColorMap = {
     50: Color(0xFFFFD7C2),
     100: Colors.amber[100] ?? Colors.amber,

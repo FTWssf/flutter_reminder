@@ -6,7 +6,10 @@ import 'package:provider/provider.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 import 'package:oil_palm_system/database/reminder_helper.dart';
+import 'package:oil_palm_system/database/notification_helper.dart';
 import 'package:oil_palm_system/model/reminder.dart';
+import 'package:oil_palm_system/model/notification_table.dart';
+import 'package:oil_palm_system/res/constant.dart';
 import 'package:oil_palm_system/service/notification_service.dart';
 
 class AddScreen extends StatefulWidget {
@@ -23,8 +26,9 @@ class AddScreen extends StatefulWidget {
 class _AddScreen extends State<AddScreen> {
   // model_notification.Notification notification ;
   bool _isLoading = false;
-  Reminder reminder = Reminder('', '', '', null);
-  DateFormat dateFormat = DateFormat("yyyy-MM-dd HH:mm:ss ");
+  Reminder reminder = Reminder('', '', '', null, null, null);
+  DateFormat dateFormat = DateFormat("yyyy-MM-dd");
+  DateFormat timeFormat = DateFormat("HH:mm:00");
 
   final GlobalKey<FormState> _formkey = GlobalKey<FormState>();
 
@@ -73,12 +77,21 @@ class _AddScreen extends State<AddScreen> {
     });
     final ReminderHelper reminderHelper =
         Provider.of<ReminderHelper>(context, listen: false);
-    int insertedId = await reminderHelper.create(reminder);
-    await NotificationService().scheduleNotification(reminder, insertedId);
-    // notification.datetime =
-    //     notification.datetime!.add(const Duration(minutes: 1));
-    // await NotificationService().scheduleNotification(notification, insertedId);
-    // await NotificationService().cancelNotification(insertedId);
+
+    int insertedReminderId = await reminderHelper.create(reminder);
+    final startDate = reminder.startDate ?? DateTime.now();
+    final daysToGenerate = reminder.endDate!.difference(startDate).inDays;
+    for (var i = 0; i < daysToGenerate + 1; i++) {
+      final date = dateFormat.format(startDate.add(Duration(days: i)));
+      final dateTime = DateTime.parse(date + ' ' + (reminder.time ??= ''));
+      // final date = dateFormat.format(startDate);
+      // final dateTime = DateTime.parse(date + ' ' + (reminder.time ??= ''))
+      //     .add(Duration(minutes: i));
+      final notification = NotificationTable(insertedReminderId, dateTime);
+      int insertedId = await NotificatioHelper().create(notification);
+      await NotificationService()
+          .scheduleNotification(reminder, insertedId, dateTime);
+    }
 
     setState(() {
       _isLoading = false;
@@ -89,16 +102,18 @@ class _AddScreen extends State<AddScreen> {
         timeInSecForIosWeb: 1,
         backgroundColor: Colors.green,
         textColor: Colors.white,
-        fontSize: 16.0);
+        fontSize: Constant.toastFontSize);
     Navigator.pop(context);
   }
 
   Widget _body(context) {
-    return Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
+    return Column(mainAxisSize: MainAxisSize.max, children: <Widget>[
       _action(context),
       _name(context),
       _land(context),
-      _datetime(context)
+      _startDate(context),
+      _endDate(context),
+      _time(context)
     ]);
   }
 
@@ -107,10 +122,14 @@ class _AddScreen extends State<AddScreen> {
     return Column(mainAxisSize: MainAxisSize.max, children: [
       TextFormField(
         controller: actionController,
+        style: const TextStyle(fontSize: Constant.textFormFontSize),
         onChanged: (value) {
           reminder.action = value;
         },
-        decoration: InputDecoration(hintText: '目的'),
+        decoration: const InputDecoration(
+            hintText: '目的',
+            hintStyle: TextStyle(fontSize: Constant.textFormFontSize),
+            errorStyle: TextStyle(fontSize: Constant.textFormErrorFontSize)),
         validator: _validateAction,
       )
     ]);
@@ -130,10 +149,14 @@ class _AddScreen extends State<AddScreen> {
     return Column(mainAxisSize: MainAxisSize.max, children: [
       TextFormField(
         controller: nameController,
+        style: const TextStyle(fontSize: Constant.textFormFontSize),
         onChanged: (value) {
           reminder.name = value;
         },
-        decoration: InputDecoration(hintText: '园主'),
+        decoration: const InputDecoration(
+            hintText: '园主',
+            hintStyle: TextStyle(fontSize: Constant.textFormFontSize),
+            errorStyle: TextStyle(fontSize: Constant.textFormErrorFontSize)),
         validator: _validateName,
       )
     ]);
@@ -153,10 +176,14 @@ class _AddScreen extends State<AddScreen> {
     return Column(mainAxisSize: MainAxisSize.max, children: [
       TextFormField(
         controller: landController,
+        style: const TextStyle(fontSize: Constant.textFormFontSize),
         onChanged: (value) {
           reminder.land = value;
         },
-        decoration: InputDecoration(hintText: '园地'),
+        decoration: const InputDecoration(
+            hintText: '园地',
+            hintStyle: TextStyle(fontSize: Constant.textFormFontSize),
+            errorStyle: TextStyle(fontSize: Constant.textFormErrorFontSize)),
         validator: _validateLand,
       )
     ]);
@@ -171,35 +198,107 @@ class _AddScreen extends State<AddScreen> {
     return null;
   }
 
-  Widget _datetime(context) {
+  Widget _startDate(context) {
     TextEditingController dateTimeController = TextEditingController();
     return Column(mainAxisSize: MainAxisSize.max, children: [
       TextFormField(
         controller: dateTimeController,
-        decoration: InputDecoration(hintText: '提醒时间'),
+        style: const TextStyle(fontSize: Constant.textFormFontSize),
+        decoration: const InputDecoration(
+            hintText: '开始提醒日期',
+            hintStyle: TextStyle(fontSize: Constant.textFormFontSize),
+            errorStyle: TextStyle(fontSize: Constant.textFormErrorFontSize)),
         readOnly: true,
         onTap: () {
-          DatePicker.showDateTimePicker(context, showTitleActions: true,
-              onChanged: (date) {
-            // print('change $date in time zone ' +
-            // date.timeZoneOffset.inHours.toString());
-          }, onConfirm: (date) {
-            // print('confirm $date');
-            // notification.datetime = date;
-            reminder.datetime = date;
-            dateTimeController.text = dateFormat.format(date);
-          }, currentTime: DateTime.now().add(const Duration(minutes: 1)));
+          DatePicker.showDatePicker(context,
+              showTitleActions: true, onChanged: (date) {}, onConfirm: (date) {
+            final dateOnly = dateFormat.format(date);
+            reminder.startDate = DateTime.parse(dateOnly);
+            dateTimeController.text = dateOnly;
+          });
         },
-        validator: _validateDatetime,
+        validator: _validateStartDate,
       )
     ]);
   }
 
-  String? _validateDatetime(String? value) {
+  String? _validateStartDate(String? value) {
+    if (value!.isEmpty) {
+      return "请选择开始提醒日期";
+    } else if (reminder.startDate!
+        .isBefore(DateTime.parse(dateFormat.format(DateTime.now())))) {
+      return "不能选择过去的日期";
+    }
+    return null;
+  }
+
+  Widget _endDate(context) {
+    TextEditingController dateTimeController = TextEditingController();
+    return Column(mainAxisSize: MainAxisSize.max, children: [
+      TextFormField(
+        controller: dateTimeController,
+        style: const TextStyle(fontSize: Constant.textFormFontSize),
+        decoration: const InputDecoration(
+            hintText: '结束提醒日期',
+            hintStyle: TextStyle(fontSize: Constant.textFormFontSize),
+            errorStyle: TextStyle(fontSize: Constant.textFormErrorFontSize)),
+        readOnly: true,
+        onTap: () {
+          DatePicker.showDatePicker(context,
+              showTitleActions: true, onChanged: (date) {}, onConfirm: (date) {
+            final dateOnly = dateFormat.format(date);
+            reminder.endDate = DateTime.parse(dateOnly);
+            dateTimeController.text = dateOnly;
+          });
+        },
+        validator: _validateEndDate,
+      )
+    ]);
+  }
+
+  String? _validateEndDate(String? value) {
+    if (value!.isEmpty) {
+      return "请选择结束提醒日期";
+    } else if (reminder.startDate == null) {
+      return "请选择开始提醒日期";
+    } else if (reminder.endDate!
+        .isBefore(DateTime.parse(dateFormat.format(DateTime.now())))) {
+      return "不能选择过去的日期";
+    } else if (reminder.endDate!.isBefore(reminder.startDate!)) {
+      return "结束日期不能早于开始日期";
+    }
+    return null;
+  }
+
+  Widget _time(context) {
+    TextEditingController dateTimeController = TextEditingController();
+    return Column(mainAxisSize: MainAxisSize.max, children: [
+      TextFormField(
+        controller: dateTimeController,
+        style: const TextStyle(fontSize: Constant.textFormFontSize),
+        decoration: const InputDecoration(
+            hintText: '提醒时间',
+            hintStyle: TextStyle(fontSize: Constant.textFormFontSize),
+            errorStyle: TextStyle(fontSize: Constant.textFormErrorFontSize)),
+        readOnly: true,
+        onTap: () {
+          DatePicker.showTimePicker(context,
+              showTitleActions: true,
+              showSecondsColumn: false,
+              onChanged: (date) {}, onConfirm: (date) {
+            final timeOnly = timeFormat.format(date);
+            reminder.time = timeOnly;
+            dateTimeController.text = timeOnly;
+          });
+        },
+        validator: _validateTime,
+      )
+    ]);
+  }
+
+  String? _validateTime(String? value) {
     if (value!.isEmpty) {
       return "请选择提醒时间";
-    } else if (reminder.datetime!.isBefore(DateTime.now())) {
-      return "不能选择过去的时间";
     }
     return null;
   }

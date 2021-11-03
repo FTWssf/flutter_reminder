@@ -110,11 +110,12 @@ class NotificationService {
     );
   }
 
-  Future<void> scheduleNotification(Reminder reminder, int insertedId) async {
+  Future<void> scheduleNotification(
+      Reminder reminder, int insertedId, DateTime datetime) async {
     // final dateTime = DateTime.now().add(Duration(seconds: 1));;
-    final dateTime = reminder.datetime;
+    final dateTime = datetime;
     final scheduledNotificationDateTime =
-        tz.TZDateTime.from(dateTime!, tz.local);
+        tz.TZDateTime.from(dateTime, tz.local);
     const androidPlatformChannelSpecifics = AndroidNotificationDetails(
       '',
       '油棕',

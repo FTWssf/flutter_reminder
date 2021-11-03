@@ -12,6 +12,7 @@ void main() async {
   // To run codebefore runApp();
   WidgetsFlutterBinding.ensureInitialized();
   await NotificationService().init();
+  Helper().initializeDatabase();
   runApp(const MyApp());
 }
 
@@ -46,7 +47,6 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    Helper().initializeDatabase();
     // readData();
   }
 
@@ -130,8 +130,16 @@ class _MyHomePageState extends State<MyHomePage> {
                         ),
                         isThreeLine: true,
                         trailing: Text(
-                          dateFormat.format(item!.datetime ?? DateTime.now()),
-                          style: Theme.of(context).textTheme.headline6,
+                          dateFormat.format(item!.startDate ?? DateTime.now()) +
+                              '\n' +
+                              dateFormat
+                                  .format(item.endDate ?? DateTime.now()) +
+                              '\n' +
+                              item.time.toString(),
+                          style: const TextStyle(
+                            fontSize: 17.0,
+                            color: Colors.black,
+                          ),
                         ),
                       );
                     },

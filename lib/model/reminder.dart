@@ -1,33 +1,46 @@
 class Reminder {
-  static const String table = 'Reminder';
-  static const String colId = 'Id';
-  static const String colName = 'Name';
-  static const String colLand = 'Land';
-  static const String colAction = 'Action';
-  static const String colDatetime = 'Datetime';
+  static const String table = 'reminder';
+  static const String colId = 'id';
+  static const String colName = 'name';
+  static const String colLand = 'land';
+  static const String colAction = 'action';
+  static const String colStartDate = 'start_date';
+  static const String colEndDate = 'end_date';
+  static const String colTime = 'time';
+  static const String colCancelled = 'cancelled';
 
   // Structure
   int? _id;
   String? _name;
   String? _land;
   String? _action;
-  DateTime? _datetime;
+  DateTime? _startDate;
+  DateTime? _endDate;
+  String? _time;
+  int? _cancelled;
 
   // Constructor
-  Reminder(this._name, this._land, this._action, this._datetime);
+  Reminder(this._name, this._land, this._action, this._startDate, this._endDate,
+      this._time);
 
   // Getters
   int? get id => _id;
   String? get name => _name;
   String? get land => _land;
   String? get action => _action;
-  DateTime? get datetime => _datetime;
+  DateTime? get startDate => _startDate;
+  DateTime? get endDate => _endDate;
+  String? get time => _time;
+  int? get cancelled => _cancelled;
 
   // Setters
   set name(String? name) => {_name = name};
   set land(String? land) => {_land = land};
   set action(String? action) => {_action = action};
-  set datetime(DateTime? datetime) => {_datetime = datetime};
+  set startDate(DateTime? startDate) => {_startDate = startDate};
+  set endDate(DateTime? endDate) => {_endDate = endDate};
+  set time(String? time) => {_time = time};
+  set cancelled(int? cancelled) => {_cancelled = cancelled};
 
   // Map
   Reminder.fromMap(dynamic obj) {
@@ -35,7 +48,10 @@ class Reminder {
     _name = obj[colName];
     _land = obj[colLand];
     _action = obj[colAction];
-    _datetime = DateTime.parse(obj[colDatetime]);
+    _startDate = DateTime.parse(obj[colStartDate]);
+    _endDate = DateTime.parse(obj[colEndDate]);
+    _time = obj[colTime];
+    _cancelled = obj[colCancelled];
   }
 
   Map<String, dynamic> toMap() {
@@ -44,7 +60,10 @@ class Reminder {
     map[colName] = _name;
     map[colLand] = _land;
     map[colAction] = _action;
-    map[colDatetime] = _datetime!.toIso8601String();
+    map[colStartDate] = _startDate!.toIso8601String();
+    map[colEndDate] = _endDate!.toIso8601String();
+    map[colTime] = _time;
+
     return map;
   }
 
