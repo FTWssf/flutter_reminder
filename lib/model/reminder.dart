@@ -63,6 +63,7 @@ class Reminder {
     map[colStartDate] = _startDate!.toIso8601String();
     map[colEndDate] = _endDate!.toIso8601String();
     map[colTime] = _time;
+    map[colCancelled] = _cancelled;
 
     return map;
   }

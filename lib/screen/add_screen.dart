@@ -88,7 +88,7 @@ class _AddScreen extends State<AddScreen> {
       // final dateTime = DateTime.parse(date + ' ' + (reminder.time ??= ''))
       //     .add(Duration(minutes: i));
       final notification = NotificationTable(insertedReminderId, dateTime);
-      int insertedId = await NotificatioHelper().create(notification);
+      int insertedId = await NotificationHelper().create(notification);
       await NotificationService()
           .scheduleNotification(reminder, insertedId, dateTime);
     }

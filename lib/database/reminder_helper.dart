@@ -13,9 +13,9 @@ class ReminderHelper with ChangeNotifier {
   //Future<List<Notification>?>
   void read() async {
     final db = await databaseHelper.database;
-    var objects = await db!.rawQuery('SELECT * FROM ${Reminder.table} '
-        'ORDER BY Id desc');
-
+    var objects = await db!.rawQuery(
+        'SELECT *, (CASE WHEN cancelled == 1 THEN 1 WHEN end_date < (date("now", "localtime")||"T00:00:00.000") THEN 1 ELSE 0 END) as cancelled FROM ${Reminder.table} '
+        'ORDER BY 9 asc, start_date asc');
     List<Reminder>? reminders = objects.isNotEmpty
         ? objects.map((obj) => Reminder.fromMap(obj)).toList()
         : null;
@@ -35,6 +35,7 @@ class ReminderHelper with ChangeNotifier {
     final db = await databaseHelper.database;
     await db!.update(Reminder.table, reminder.toMap(),
         where: '${Reminder.colId} = ?', whereArgs: [reminder.id]);
+    read();
   }
 
   Future<void> delete(int id) async {

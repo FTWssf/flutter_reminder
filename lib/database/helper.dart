@@ -71,7 +71,7 @@ class Helper {
         '${Reminder.colCancelled} INTEGER DEFAULT 0)');
     await db.execute('CREATE TABLE ${NotificationTable.table} ( '
         '${NotificationTable.colId} INTEGER PRIMARY KEY AUTOINCREMENT, '
-        '${NotificationTable.colReminderId} TEXT NOT NULL, '
+        '${NotificationTable.colReminderId} INTEGER NOT NULL, '
         '${NotificationTable.colDate} TEXT, '
         'FOREIGN KEY (${NotificationTable.colReminderId}) REFERENCES ${Reminder.table} (${Reminder.colId}) )');
   }
