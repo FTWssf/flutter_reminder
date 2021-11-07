@@ -1,4 +1,4 @@
-package com.example.oil_palm_system
+package SSFTEST.huawei
 
 import io.flutter.embedding.android.FlutterActivity
 
