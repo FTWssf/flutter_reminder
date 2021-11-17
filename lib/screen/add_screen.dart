@@ -13,11 +13,7 @@ import 'package:oil_palm_system/res/constant.dart';
 import 'package:oil_palm_system/service/notification_service.dart';
 
 class AddScreen extends StatefulWidget {
-  final String payload;
-
-  // late Reminder reminder;
-
-  AddScreen({Key? key, this.payload = ''}) : super(key: key);
+  const AddScreen({Key? key}) : super(key: key);
 
   @override
   State<AddScreen> createState() => _AddScreen();

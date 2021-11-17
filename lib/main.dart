@@ -2,21 +2,29 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:oil_palm_system/model/notification_table.dart';
-import 'package:oil_palm_system/service/notification_service.dart';
-import 'package:oil_palm_system/res/constant.dart';
+import 'package:provider/provider.dart';
+
 import 'package:oil_palm_system/database/helper.dart';
-import 'package:oil_palm_system/model/reminder.dart';
 import 'package:oil_palm_system/database/reminder_helper.dart';
 import 'package:oil_palm_system/database/notification_helper.dart';
+
+import 'package:oil_palm_system/model/notification_table.dart';
+import 'package:oil_palm_system/model/reminder.dart';
+
+import 'package:oil_palm_system/res/constant.dart';
+
 import 'package:oil_palm_system/screen/add_screen.dart';
-import 'package:provider/provider.dart';
+
+import 'package:oil_palm_system/service/notification_service.dart';
+
+import 'package:oil_palm_system/widget/bottom_nav_bar.dart';
 
 void main() async {
   // To run codebefore runApp();
   WidgetsFlutterBinding.ensureInitialized();
   await NotificationService().init();
   Helper().initializeDatabase();
+
   runApp(const MyApp());
 }
 
@@ -29,68 +37,54 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Constant.themeColor,
       ),
-      home: const MyHomePage(title: Constant.appName),
+      home: const MyHomePage(),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
-
-  final String title;
+  const MyHomePage({Key? key}) : super(key: key);
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
   List<Reminder>? results;
   DateFormat dateFormat = DateFormat("yyyy-MM-dd"); //HH:mm
+  int _selectedIndex = 0;
+  static const TextStyle optionStyle =
+      TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
 
   @override
   void initState() {
     super.initState();
-    // readData();
   }
 
-  void _incrementCounter() async {
+  static const List<Widget> _widgetOptions = <Widget>[
+    Text(
+      'Index 0: Home',
+      style: optionStyle,
+    ),
+    LandScreen()
+  ];
+
+  void _onItemTapped(int index) {
     setState(() {
-      _counter++;
+      _selectedIndex = index;
     });
-    // NotificationService().showNotification();
   }
 
   void _routeAddScreen(ReminderHelper reminderHelper) async {
-    // Navigator.of(context).push(MaterialPageRoute(builder: (_) {
-    //   return AddScreen(
-    //       // payload: '添加',
-    //       );
-    // }));
     Navigator.push<void>(
       context,
       MaterialPageRoute<void>(
         builder: (context) => ListenableProvider<ReminderHelper>.value(
           value: reminderHelper,
-          child: AddScreen(),
+          child: const AddScreen(),
         ),
       ),
     );
-    //.then((value) => readData())
-  }
-
-  void readData() async {
-    // NotificationService().scheduleNotification();
-    // await Helper().initializeDatabase();
-    // Helper().createTable();
-    // model_notification.Notification notification =
-    // model_notification.Notification('B', 'B', 'Heal', DateTime.now());
-    // await NotificationHelper().create(notification);
-
-    // final queryResults = await NotificationHelper().read();
-    // setState(() {
-    // results = queryResults;
-    // });
   }
 
   void _cancelNotification(
@@ -122,19 +116,17 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Consumer<ReminderHelper>(
             builder: (context, reminderHelper, child) => Scaffold(
                   appBar: AppBar(
-                    title: Text(widget.title),
+                    title: const Text(Constant.appName),
                   ),
                   body: ListView.separated(
-                    // itemCount: results?.length ?? 0,
                     itemCount: (reminderHelper.items == null
                         ? 0
                         : reminderHelper.items!.length),
                     itemBuilder: (context, index) {
-                      // final item = results?[index];
                       final item = reminderHelper.items?[index];
 
                       return Slidable(
-                          actionPane: SlidableDrawerActionPane(),
+                          actionPane: const SlidableDrawerActionPane(),
                           secondaryActions: <Widget>[
                             IconSlideAction(
                               caption: '取消',
@@ -219,20 +211,22 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                   floatingActionButton: FloatingActionButton(
                     onPressed: () {
-                      Navigator.push<void>(
-                        context,
-                        MaterialPageRoute<void>(
-                          builder: (context) =>
-                              ListenableProvider<ReminderHelper>.value(
-                            value: reminderHelper,
-                            child: AddScreen(),
-                          ),
-                        ),
-                      );
+                      _routeAddScreen(reminderHelper);
                     },
                     tooltip: '添加',
                     child: const Icon(Icons.add),
                   ),
+                  bottomNavigationBar: BottomNavBar(
+                      index: _selectedIndex, itemTapped: _onItemTapped),
                 )));
+  }
+}
+
+class LandScreen extends StatelessWidget {
+  const LandScreen({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Text('123');
   }
 }
