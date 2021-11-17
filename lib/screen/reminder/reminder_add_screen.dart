@@ -12,14 +12,14 @@ import 'package:oil_palm_system/model/notification_table.dart';
 import 'package:oil_palm_system/res/constant.dart';
 import 'package:oil_palm_system/service/notification_service.dart';
 
-class AddScreen extends StatefulWidget {
-  const AddScreen({Key? key}) : super(key: key);
+class ReminderAddScreen extends StatefulWidget {
+  const ReminderAddScreen({Key? key}) : super(key: key);
 
   @override
-  State<AddScreen> createState() => _AddScreen();
+  State<ReminderAddScreen> createState() => _ReminderAddScreenState();
 }
 
-class _AddScreen extends State<AddScreen> {
+class _ReminderAddScreenState extends State<ReminderAddScreen> {
   // model_notification.Notification notification ;
   bool _isLoading = false;
   Reminder reminder = Reminder('', '', '', null, null, null);
