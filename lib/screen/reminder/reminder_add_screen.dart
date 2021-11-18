@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:loading_overlay/loading_overlay.dart';
-import 'package:provider/provider.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
 import 'package:oil_palm_system/database/reminder_helper.dart';
 import 'package:oil_palm_system/database/notification_helper.dart';
@@ -13,8 +13,9 @@ import 'package:oil_palm_system/res/constant.dart';
 import 'package:oil_palm_system/service/notification_service.dart';
 
 class ReminderAddScreen extends StatefulWidget {
-  const ReminderAddScreen({Key? key}) : super(key: key);
-
+  const ReminderAddScreen({Key? key, required this.pagingController})
+      : super(key: key);
+  final PagingController pagingController;
   @override
   State<ReminderAddScreen> createState() => _ReminderAddScreenState();
 }
@@ -35,7 +36,7 @@ class _ReminderAddScreenState extends State<ReminderAddScreen> {
         autovalidateMode: AutovalidateMode.onUserInteraction,
         child: Scaffold(
           appBar: AppBar(
-            title: Text('添加'),
+            title: const Text('添加'),
           ),
           body: LoadingOverlay(
             child: Padding(
@@ -71,10 +72,12 @@ class _ReminderAddScreenState extends State<ReminderAddScreen> {
     setState(() {
       _isLoading = true;
     });
-    final ReminderHelper reminderHelper =
-        Provider.of<ReminderHelper>(context, listen: false);
+    //
+    // final ReminderHelper reminderHelper =
+    // Provider.of<ReminderHelper>(context, listen: false);
+    // int insertedReminderId = await reminderHelper.create(reminder);
 
-    int insertedReminderId = await reminderHelper.create(reminder);
+    int insertedReminderId = await ReminderHelper().create(reminder);
     final startDate = reminder.startDate ?? DateTime.now();
     final daysToGenerate = reminder.endDate!.difference(startDate).inDays;
     for (var i = 0; i < daysToGenerate + 1; i++) {
@@ -99,6 +102,7 @@ class _ReminderAddScreenState extends State<ReminderAddScreen> {
         backgroundColor: Colors.green,
         textColor: Colors.white,
         fontSize: Constant.toastFontSize);
+    widget.pagingController.refresh();
     Navigator.pop(context);
   }
 
