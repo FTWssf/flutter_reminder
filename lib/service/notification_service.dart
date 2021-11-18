@@ -114,8 +114,9 @@ class NotificationService {
       Reminder reminder, int insertedId, DateTime datetime) async {
     // final dateTime = DateTime.now().add(Duration(seconds: 1));;
     if (datetime.isBefore(DateTime.now())) return;
-    final scheduledNotificationDateTime =
-        tz.TZDateTime.from(datetime, tz.local);
+    final scheduledNotificationDateTime = tz.TZDateTime.from(
+        datetime, tz.getLocation('Asia/Kuala_Lumpur')); //tz.local
+
     const androidPlatformChannelSpecifics = AndroidNotificationDetails(
       '',
       '油棕',
@@ -130,8 +131,8 @@ class NotificationService {
         iOS: iOSPlatformChannelSpecifics);
     await flutterLocalNotificationsPlugin.zonedSchedule(
         insertedId,
-        reminder.action,
-        '园主: ' + (reminder.name ?? '') + ' 园地: ' + (reminder.land ?? ''),
+        reminder.land,
+        '油棕收割',
         scheduledNotificationDateTime,
         platformChannelSpecifics,
         uiLocalNotificationDateInterpretation:

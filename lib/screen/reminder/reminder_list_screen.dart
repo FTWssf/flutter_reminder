@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:provider/provider.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
 import 'package:oil_palm_system/database/reminder_helper.dart';
@@ -17,7 +15,6 @@ class ReminderListScreen extends StatefulWidget {
 }
 
 class _ReminderListScreenState extends State<ReminderListScreen> {
-  List<Reminder>? results;
   DateFormat dateFormat = DateFormat("yyyy-MM-dd"); //HH:mm
   final _pagingController = PagingController<int, Reminder>(firstPageKey: 1);
 
@@ -38,21 +35,21 @@ class _ReminderListScreenState extends State<ReminderListScreen> {
   Future<void> _fetchPage(int pageKey) async {
     try {
       final newPage = await ReminderHelper().readPagination(pageKey);
-      final count = await ReminderHelper().count();
-      final computedCount =
-          count > ReminderHelper.row ? count - ReminderHelper.row : 0;
-
-      final previouslyFetchedItemsCount =
-          _pagingController.itemList?.length ?? 0;
-      final isLastPage = previouslyFetchedItemsCount >= computedCount;
+      // final count = await ReminderHelper().count();
+      // final computedCount =
+      //     count > ReminderHelper.row ? count - ReminderHelper.row : 0;
+      // final previouslyFetchedItemsCount =
+      //     _pagingController.itemList?.length ?? 0;
+      // final isLastPage = previouslyFetchedItemsCount >= computedCount;
+      final isLastPage = newPage!.length <= ReminderHelper.row;
       // final newItems = newPage.reminders;
       final newItems = newPage;
 
       if (isLastPage) {
-        _pagingController.appendLastPage(newItems!);
+        _pagingController.appendLastPage(newItems);
       } else {
         final nextPageKey = pageKey + 1;
-        _pagingController.appendPage(newItems!, nextPageKey);
+        _pagingController.appendPage(newItems, nextPageKey);
       }
     } catch (error) {
       _pagingController.error = error;
@@ -90,7 +87,6 @@ class _ReminderListScreenState extends State<ReminderListScreen> {
   //   }
   //   reminder.cancelled = 1;
   //   reminderHelper.update(reminder);
-  //   NotificationService().getPendingNotification();
 
   //   Fluttertoast.showToast(
   //       msg: "取消成功",
@@ -119,18 +115,14 @@ class _ReminderListScreenState extends State<ReminderListScreen> {
               reminder: item,
               pagingController: _pagingController,
             ),
-            // firstPageErrorIndicatorBuilder: (context) => ErrorIndicator(
-            //   error: _pagingController.error,
-            //   onTryAgain: () => _pagingController.refresh(),
-            // ),
+            firstPageErrorIndicatorBuilder: (context) => const ListTile(
+                title: Text('没有数据',
+                    style: TextStyle(fontSize: 25.0),
+                    textAlign: TextAlign.center)),
             noItemsFoundIndicatorBuilder: (context) => const ListTile(
-              title: Text(
-                '没有数据',
-                style: TextStyle(
-                    fontSize: 24.0,
-                    fontWeight: FontWeight.bold,
-                    decoration: TextDecoration.underline),
-              ),
+              title: Text('没有数据',
+                  style: TextStyle(fontSize: 25.0),
+                  textAlign: TextAlign.center),
             ),
           ),
         ),

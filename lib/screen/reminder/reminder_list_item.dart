@@ -36,7 +36,6 @@ class _ReminderListItemState extends State<ReminderListItem> {
     }
     reminder.cancelled = 1;
     ReminderHelper().update(reminder);
-    NotificationService().getPendingNotification();
 
     Fluttertoast.showToast(
         msg: "取消成功",
@@ -58,7 +57,8 @@ class _ReminderListItemState extends State<ReminderListItem> {
           color: (widget.reminder.cancelled == 1) ? Colors.grey : Colors.red,
           icon: Icons.cancel,
           onTap: () => {
-            if (widget.reminder.cancelled == 0)
+            if (widget.reminder.cancelled == 0 ||
+                widget.reminder.cancelled == null)
               {
                 showDialog(
                     context: context,
@@ -86,7 +86,7 @@ class _ReminderListItemState extends State<ReminderListItem> {
       ],
       child: ListTile(
         title: Text(
-          widget.reminder.action ?? '',
+          (widget.reminder.land ?? ''),
           style: TextStyle(
               fontSize: 24.0,
               color:
@@ -94,24 +94,8 @@ class _ReminderListItemState extends State<ReminderListItem> {
               fontWeight: FontWeight.bold,
               decoration: TextDecoration.underline),
         ),
-        subtitle: Padding(
-          padding: const EdgeInsets.only(top: 3.5),
-          child: Text(
-            '园主: ' +
-                (widget.reminder.name ?? '') +
-                '\n园地: ' +
-                (widget.reminder.land ?? ''),
-            style: const TextStyle(
-              fontSize: 21.0,
-              color: Colors.black,
-            ),
-          ),
-        ),
-        isThreeLine: true,
         trailing: Text(
-          dateFormat.format(widget.reminder.startDate ?? DateTime.now()) +
-              '\n' +
-              dateFormat.format(widget.reminder.endDate ?? DateTime.now()) +
+          dateFormat.format(widget.reminder.date ?? DateTime.now()) +
               '\n' +
               widget.reminder.time.toString(),
           style: const TextStyle(

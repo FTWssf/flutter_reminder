@@ -1,21 +1,27 @@
 import 'package:flutter/foundation.dart';
-import 'package:oil_palm_system/model/reminder.dart';
-import 'package:oil_palm_system/database/helper.dart';
 import 'package:sqflite/sqflite.dart';
+
+import 'package:oil_palm_system/model/reminder.dart';
+import 'package:oil_palm_system/model/land.dart';
+import 'package:oil_palm_system/database/helper.dart';
+import 'package:oil_palm_system/res/constant.dart';
 
 class ReminderHelper with ChangeNotifier {
   Helper databaseHelper = Helper();
   List<Reminder>? items = [];
-  static const row = 10;
+  static const row = Constant.row;
+
   ReminderHelper() {
-    read();
+    // read();
   }
 
   void read() async {
     final db = await databaseHelper.database;
-    var objects = await db!.rawQuery(
-        'SELECT *, (CASE WHEN cancelled == 1 THEN 1 WHEN end_date < (date("now", "localtime")||"T00:00:00.000") THEN 1 ELSE 0 END) as cancelled FROM ${Reminder.table} '
-        'ORDER BY 9 asc, start_date asc');
+    // var objects = await db!.rawQuery(
+    //     'SELECT *, (CASE WHEN cancelled == 1 THEN 1 WHEN end_date < (date("now", "localtime")||"T00:00:00.000") THEN 1 ELSE 0 END) as cancelled FROM ${Reminder.table} '
+    //     'ORDER BY 9 asc, start_date asc');
+    var objects = await db!.rawQuery('SELECT * FROM ${Reminder.table} '
+        'ORDER BY cancelled asc, date asc');
     List<Reminder>? reminders = objects.isNotEmpty
         ? objects.map((obj) => Reminder.fromMap(obj)).toList()
         : null;
@@ -26,9 +32,13 @@ class ReminderHelper with ChangeNotifier {
   Future<List<Reminder>?> readPagination(int page) async {
     final offset = (page - 1) * row;
     final db = await databaseHelper.database;
+    // var objects = await db!.rawQuery(
+    //     'SELECT *, (CASE WHEN cancelled == 1 THEN 1 WHEN end_date < (date("now", "localtime")||"T00:00:00.000") THEN 1 ELSE 0 END) as cancelled FROM ${Reminder.table} '
+    //     'ORDER BY 9 asc, start_date asc LIMIT $offset, $row');
     var objects = await db!.rawQuery(
-        'SELECT *, (CASE WHEN cancelled == 1 THEN 1 WHEN end_date < (date("now", "localtime")||"T00:00:00.000") THEN 1 ELSE 0 END) as cancelled FROM ${Reminder.table} '
-        'ORDER BY 9 asc, start_date asc LIMIT $offset, $row');
+        'SELECT *, (SELECT name FROM ${Land.table} where id = ${Reminder.table}.${Reminder.colLandId}) as land FROM ${Reminder.table} '
+        'ORDER BY cancelled asc, date asc LIMIT $offset, $row');
+
     List<Reminder>? reminders = objects.isNotEmpty
         ? objects.map((obj) => Reminder.fromMap(obj)).toList()
         : null;
@@ -44,7 +54,19 @@ class ReminderHelper with ChangeNotifier {
     return count;
   }
 
+  Future<List<Reminder>?> getLandReminder(int id) async {
+    final db = await databaseHelper.database;
+    var objects = await db!.rawQuery(
+        'SELECT * FROM ${Reminder.table} where ${Reminder.colLandId} = $id');
+
+    List<Reminder>? reminders = objects.isNotEmpty
+        ? objects.map((obj) => Reminder.fromMap(obj)).toList()
+        : null;
+    return reminders;
+  }
+
   Future<int> create(Reminder reminder) async {
+    reminder.cancelled = 0;
     final db = await databaseHelper.database;
     int insertedId = await db!.insert(Reminder.table, reminder.toMap());
     read();

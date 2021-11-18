@@ -32,4 +32,13 @@ class NotificationHelper {
         await db!.insert(NotificationTable.table, notification.toMap());
     return insertedId;
   }
+
+  Future<void> delete(int id) async {
+    var db = await databaseHelper.database;
+    db!.delete(
+      NotificationTable.table,
+      where: "${NotificationTable.colId} = ?",
+      whereArgs: [id],
+    );
+  }
 }

@@ -3,6 +3,7 @@ import 'package:path/path.dart';
 import 'package:oil_palm_system/res/constant.dart';
 import 'package:oil_palm_system/model/reminder.dart';
 import 'package:oil_palm_system/model/notification_table.dart';
+import 'package:oil_palm_system/model/land.dart';
 
 class Helper {
   static const dbFileName = Constant.dbFileName;
@@ -52,9 +53,9 @@ class Helper {
     final db = await instance.database;
     await db!.execute('CREATE TABLE ${Reminder.table} ( '
         '${Reminder.colId} INTEGER PRIMARY KEY AUTOINCREMENT, '
-        '${Reminder.colName} TEXT, '
-        '${Reminder.colLand} TEXT, '
-        '${Reminder.colAction} TEXT, ');
+        '${Reminder.colLandId} TEXT, '
+        '${Reminder.colDate} TEXT, '
+        '${Reminder.colTime} TEXT, ');
   }
 
   void _createTable(Database db, int newVersion) async {
@@ -62,18 +63,21 @@ class Helper {
     // await db.execute('DROP TABLE IF EXISTS ${NotificationTable.table}');
     await db.execute('CREATE TABLE ${Reminder.table} ( '
         '${Reminder.colId} INTEGER PRIMARY KEY AUTOINCREMENT, '
-        '${Reminder.colName} TEXT NOT NULL, '
-        '${Reminder.colLand} TEXT NOT NULL, '
-        '${Reminder.colAction} TEXT NOT NULL, '
-        '${Reminder.colStartDate} TEXT, '
-        '${Reminder.colEndDate} TEXT, '
+        '${Reminder.colLandId} INTEGER NOT NULL, '
+        '${Reminder.colDate} TEXT, '
         '${Reminder.colTime} TEXT, '
-        '${Reminder.colCancelled} INTEGER DEFAULT 0)');
+        '${Reminder.colCancelled} INTEGER DEFAULT 0, '
+        'FOREIGN KEY (${Reminder.colLandId}) REFERENCES ${Land.table} (${Land.colId}))');
+
     await db.execute('CREATE TABLE ${NotificationTable.table} ( '
         '${NotificationTable.colId} INTEGER PRIMARY KEY AUTOINCREMENT, '
         '${NotificationTable.colReminderId} INTEGER NOT NULL, '
         '${NotificationTable.colDate} TEXT, '
-        'FOREIGN KEY (${NotificationTable.colReminderId}) REFERENCES ${Reminder.table} (${Reminder.colId}) )');
+        'FOREIGN KEY (${NotificationTable.colReminderId}) REFERENCES ${Reminder.table} (${Reminder.colId}))');
+
+    await db.execute('CREATE TABLE ${Land.table} ( '
+        '${Land.colId} INTEGER PRIMARY KEY AUTOINCREMENT, '
+        '${Land.colName} TEXT NOT NULL)');
   }
 
   void deleteTable() async {

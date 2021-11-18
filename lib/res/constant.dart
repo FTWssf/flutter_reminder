@@ -8,6 +8,7 @@ class Constant {
   // database related
   static const String dbFileName = 'local.db';
   static const int dbCurrentVersion = 1;
+  static const int row = 10;
 
   // design related
   static const String theme = 'AppTheme';
