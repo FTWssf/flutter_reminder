@@ -93,7 +93,7 @@ class NotificationService {
   void _showDialog(BuildContext context) {
     showDialog<void>(
       context: context,
-      barrierDismissible: false, // user must tap button!
+      barrierDismissible: false, // user must tap button
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Notification Permission Granted'),
@@ -148,6 +148,10 @@ class NotificationService {
   Future<List> getPendingNotification() async {
     final List<PendingNotificationRequest> pendingNotificationRequests =
         await flutterLocalNotificationsPlugin.pendingNotificationRequests();
+    for (var a in pendingNotificationRequests) {
+      print(
+          'body: ${a.body} title: ${a.title} payload: ${a.payload} id: ${a.id}}');
+    }
     return pendingNotificationRequests;
   }
 

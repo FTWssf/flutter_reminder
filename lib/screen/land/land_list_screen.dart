@@ -43,7 +43,7 @@ class _LandListScreenState extends State<LandListScreen> {
   Future<void> _fetchPage(int pageKey) async {
     try {
       final newPage = await LandHelper().readPagination(pageKey);
-      final isLastPage = newPage!.length < LandHelper.row;
+      final isLastPage = newPage!.length <= LandHelper.row;
       final newItems = newPage;
 
       if (isLastPage) {
@@ -60,14 +60,19 @@ class _LandListScreenState extends State<LandListScreen> {
   void _deleteLand(Land land) async {
     List<Reminder>? reminders =
         await ReminderHelper().getLandReminder(land.id ?? 0);
-    for (var reminder in reminders!) {
-      List<NotificationTable>? notifications =
-          await NotificationHelper().getReminderNotification(reminder.id ?? 0);
-      for (var notification in notifications!) {
-        await NotificationService().cancelNotification(notification.id ?? 0);
-        NotificationHelper().delete(notification.id ?? 0);
+    if (reminders != null) {
+      for (var reminder in reminders) {
+        List<NotificationTable>? notifications = await NotificationHelper()
+            .getReminderNotification(reminder.id ?? 0);
+        if (notifications != null) {
+          for (var notification in notifications) {
+            await NotificationService()
+                .cancelNotification(notification.id ?? 0);
+            NotificationHelper().delete(notification.id ?? 0);
+          }
+        }
+        ReminderHelper().delete(reminder.id ?? 0);
       }
-      ReminderHelper().delete(reminder.id ?? 0);
     }
 
     if (_isLoading) return;
@@ -148,7 +153,8 @@ class _LandListScreenState extends State<LandListScreen> {
                 context: context,
                 builder: (BuildContext context) {
                   return AlertDialog(
-                    title: const Text("注意"),
+                    title:
+                        const Text("注意", style: TextStyle(color: Colors.red)),
                     content: const Text("取消此通知？"),
                     actions: [
                       TextButton(

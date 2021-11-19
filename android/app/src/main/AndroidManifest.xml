@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="SSFTEST.huawei">
+    package="baanhock.huawei">
    <application
-        android:label="SSFTEST"
+        android:label="BAAN HOCK"
         android:icon="@mipmap/ic_launcher">
         <receiver android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationBootReceiver">
           <intent-filter>

@@ -5,6 +5,8 @@ class Constant {
   static const String appName = '油棕';
   static const String androidIcon = 'app_icon';
 
+  // logic related
+  static const int harvestDay = 14;
   // database related
   static const String dbFileName = 'local.db';
   static const int dbCurrentVersion = 1;

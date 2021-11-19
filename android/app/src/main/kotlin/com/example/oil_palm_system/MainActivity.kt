@@ -1,4 +1,4 @@
-package SSFTEST.huawei
+package baanhock.huawei
 
 import io.flutter.embedding.android.FlutterActivity
 
