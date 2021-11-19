@@ -62,7 +62,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await NotificationService().init();
   await Helper().initializeDatabase();
-  await Workmanager().initialize(callbackDispatcher, isInDebugMode: true);
+  await Workmanager().initialize(callbackDispatcher);
 
   // Workmanager().registerOneOffTask(
   //   "3", // Ignored on iOS
@@ -74,17 +74,18 @@ void main() async {
     "notificationPeriodicTask",
     // When no frequency is provided the default 15 minutes is set.
     // Minimum frequency is 15 min. Android will automatically change your frequency to 15 min if you have configured a lower frequency.
-    // frequency: const Duration(hours: 6),
+    frequency: const Duration(hours: 6),
   );
 
   runApp(const App());
-  // NotificationService().getPendingNotification();
-  // List<Reminder>? reminders = await ReminderHelper().getPeriodicReminder();
-  // print(reminders);
-  // List<NotificationTable>? abc = await NotificationHelper().read();
-  // for (var a in abc!) {
-  //   print('id: ${a.id} reminder: ${a.reminderId} date: ${a.date}');
-  // }
+  NotificationService().getPendingNotification();
+  List<Reminder>? reminders = await ReminderHelper().getPeriodicReminder();
+  List<NotificationTable>? abc = await NotificationHelper().read();
+  if (abc != null) {
+    for (var a in abc) {
+      print('id: ${a.id} reminder: ${a.reminderId} date: ${a.date}');
+    }
+  }
 }
 
 class App extends StatefulWidget {
