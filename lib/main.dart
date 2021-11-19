@@ -78,14 +78,14 @@ void main() async {
   );
 
   runApp(const App());
-  NotificationService().getPendingNotification();
-  List<Reminder>? reminders = await ReminderHelper().getPeriodicReminder();
-  List<NotificationTable>? abc = await NotificationHelper().read();
-  if (abc != null) {
-    for (var a in abc) {
-      print('id: ${a.id} reminder: ${a.reminderId} date: ${a.date}');
-    }
-  }
+  // NotificationService().getPendingNotification();
+  // List<Reminder>? reminders = await ReminderHelper().getPeriodicReminder();
+  // List<NotificationTable>? abc = await NotificationHelper().read();
+  // if (abc != null) {
+  //   for (var a in abc) {
+  //     print('id: ${a.id} reminder: ${a.reminderId} date: ${a.date}');
+  //   }
+  // }
 }
 
 class App extends StatefulWidget {
