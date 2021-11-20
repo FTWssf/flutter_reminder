@@ -69,9 +69,9 @@ class ReminderHelper with ChangeNotifier {
   Future<List<Reminder>?> getPeriodicReminder() async {
     final db = await databaseHelper.database;
     var objects = await db!.rawQuery(
-        'SELECT *, (SELECT name FROM ${Land.table} where id = ${Reminder.table}.${Reminder.colLandId}) as land, (SELECT date from ${NotificationTable.table} where ${NotificationTable.colReminderId} = ${Reminder.table}.${Reminder.colId} and date = (date(${Reminder.table}.${Reminder.colDate}, "+1 day")||"T"||time||".000") limit 1) as notification FROM ${Reminder.table} where cancelled = 0 and date <= (date("now", "localtime")||"T00:00:00.000") and notification IS NULL;');
+        'SELECT *, (SELECT name FROM ${Land.table} where id = ${Reminder.table}.${Reminder.colLandId}) as land, (SELECT date from ${NotificationTable.table} where ${NotificationTable.colReminderId} = ${Reminder.table}.${Reminder.colId} and date = (date("now", "+1 day")||"T"||time||".000") limit 1) as notification FROM ${Reminder.table} where cancelled = 0 and date <= (date("now", "localtime")||"T00:00:00.000") and notification IS NULL;');
     // for (var a in objects) {
-    //   print(a);
+    //   print('periodicReminder: $a');
     // }
     List<Reminder>? reminders = objects.isNotEmpty
         ? objects.map((obj) => Reminder.fromMap(obj)).toList()
