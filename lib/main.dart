@@ -20,6 +20,7 @@ void callbackDispatcher() {
   Workmanager().executeTask((task, inputData) async {
     switch (task) {
       case 'notificationPeriodicTask':
+      case Workmanager.iOSBackgroundTask:
         await NotificationService().init();
         List<Reminder>? reminders =
             await ReminderHelper().getPeriodicReminder();
@@ -39,9 +40,9 @@ void callbackDispatcher() {
           }
         }
         break;
-      case Workmanager.iOSBackgroundTask:
-        print("The iOS background fetch was triggered");
-        break;
+      // case Workmanager.iOSBackgroundTask:
+      //   print("The iOS background fetch was triggered");
+      //   break;
       default:
         break;
     }
@@ -74,6 +75,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await NotificationService().init();
   await Helper().initializeDatabase();
+  Workmanager().cancelByUniqueName("4");
 
   switch (Platform.operatingSystem) {
     case 'ios':
@@ -84,7 +86,7 @@ void main() async {
       await Workmanager().initialize(callbackDispatcher,
           isInDebugMode: (kReleaseMode ? false : true));
       Workmanager().registerPeriodicTask(
-        "4",
+        "5",
         "notificationPeriodicTask",
         frequency: (kReleaseMode
             ? const Duration(hours: 6)
@@ -96,7 +98,7 @@ void main() async {
   }
 
   runApp(const App());
-  // NotificationService().getPendingNotification();
+  // final pendingList = await NotificationService().getPendingNotification();
   // List<Reminder>? reminders = await ReminderHelper().getPeriodicReminder();
   // List<NotificationTable>? abc = await NotificationHelper().read();
   // if (abc != null) {
@@ -131,6 +133,7 @@ class _App extends State<App> {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: Constant.appName,
+      // onGenerateRoute: _routes(),
       theme: ThemeData(
         primarySwatch: Constant.themeColor,
       ),
@@ -144,4 +147,22 @@ class _App extends State<App> {
       ),
     );
   }
+
+  // RouteFactory _routes() {
+  //   return (settings) {
+  //     final arguments = settings.arguments;
+  //     Widget screen;
+  //     switch (settings.name) {
+  //       case LocationsRoute:
+  //         screen = Locations();
+  //         break;
+  //       case LocationDetailRoute:
+  //         screen = LocationDetail(arguments['id']);
+  //         break;
+  //       default:
+  //         return null;
+  //     }
+  //     return MaterialPageRoute(builder: (BuildContext context) => screen);
+  //   };
+  // }
 }

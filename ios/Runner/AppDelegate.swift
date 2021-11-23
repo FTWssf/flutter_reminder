@@ -13,7 +13,7 @@ import Flutter
     }
 
     // Flutter WorkManager
-    UIApplication.shared.setMinimumBackgroundFetchInterval(TimeInterval(60*1))
+    UIApplication.shared.setMinimumBackgroundFetchInterval(TimeInterval(60*15))
     UNUserNotificationCenter.current().delegate = self
 
     GeneratedPluginRegistrant.register(with: self)

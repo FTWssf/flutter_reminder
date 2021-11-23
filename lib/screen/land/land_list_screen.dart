@@ -43,8 +43,14 @@ class _LandListScreenState extends State<LandListScreen> {
   Future<void> _fetchPage(int pageKey) async {
     try {
       final newPage = await LandHelper().readPagination(pageKey);
-      final isLastPage = newPage!.length <= LandHelper.row;
-      final newItems = newPage;
+
+      bool isLastPage = false;
+      final newItems = newPage ?? [];
+      if (newPage == null) {
+        isLastPage = true;
+      } else {
+        isLastPage = newPage.length < LandHelper.row;
+      }
 
       if (isLastPage) {
         _pagingController.appendLastPage(newItems);

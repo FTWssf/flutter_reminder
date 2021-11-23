@@ -41,9 +41,13 @@ class _ReminderListScreenState extends State<ReminderListScreen> {
       // final previouslyFetchedItemsCount =
       //     _pagingController.itemList?.length ?? 0;
       // final isLastPage = previouslyFetchedItemsCount >= computedCount;
-      final isLastPage = newPage!.length <= ReminderHelper.row;
-      // final newItems = newPage.reminders;
-      final newItems = newPage;
+      bool isLastPage = false;
+      final newItems = newPage ?? [];
+      if (newPage == null) {
+        isLastPage = true;
+      } else {
+        isLastPage = newPage.length < ReminderHelper.row;
+      }
 
       if (isLastPage) {
         _pagingController.appendLastPage(newItems);
