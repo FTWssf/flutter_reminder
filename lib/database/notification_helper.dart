@@ -15,6 +15,15 @@ class NotificationHelper {
     return notifications;
   }
 
+  Future<NotificationTable?> fetch(int id) async {
+    final db = await databaseHelper.database;
+    var object = await db!.rawQuery(
+        'SELECT * FROM ${NotificationTable.table} where ${NotificationTable.colId} = $id');
+    NotificationTable? notification =
+        object.isNotEmpty ? NotificationTable.fromMap(object[0]) : null;
+    return notification;
+  }
+
   Future<List<NotificationTable>?> getReminderNotification(int id) async {
     final db = await databaseHelper.database;
     var objects = await db!.rawQuery(

@@ -21,6 +21,19 @@ void callbackDispatcher() {
     switch (task) {
       case 'notificationPeriodicTask':
       case Workmanager.iOSBackgroundTask:
+        final pendingList =
+            await NotificationService().getPendingNotification();
+        for (var item in pendingList) {
+          final notification = await NotificationHelper().fetch(item.id);
+          if (notification != null) {
+            if (notification.date!.isBefore(DateTime.now())) {
+              final id = notification.id ?? 0;
+              await NotificationService().cancelNotification(id);
+              await NotificationService().showNotification(item.title, id);
+            }
+          }
+        }
+
         await NotificationService().init();
         List<Reminder>? reminders =
             await ReminderHelper().getPeriodicReminder();
@@ -39,6 +52,7 @@ void callbackDispatcher() {
                 .scheduleNotification(reminder, insertedId, dateTime);
           }
         }
+
         break;
       // case Workmanager.iOSBackgroundTask:
       //   print("The iOS background fetch was triggered");
@@ -89,7 +103,7 @@ void main() async {
         "5",
         "notificationPeriodicTask",
         frequency: (kReleaseMode
-            ? const Duration(hours: 6)
+            ? const Duration(hours: 3)
             : const Duration(minutes: 15)),
       );
       break;

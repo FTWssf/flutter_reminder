@@ -155,15 +155,20 @@ class NotificationService {
     return pendingNotificationRequests;
   }
 
-  Future<void> showNotification() async {
-    const android = AndroidNotificationDetails('id', 'channel ',
-        channelDescription: 'description',
-        priority: Priority.high,
-        importance: Importance.max);
-    const iOS = IOSNotificationDetails();
-    const platform = NotificationDetails(android: android, iOS: iOS);
+  Future<void> showNotification(String title, int insertedId) async {
+    const androidPlatformChannelSpecifics = AndroidNotificationDetails(
+      '',
+      '油棕',
+      channelDescription: '提醒信息',
+      priority: Priority.high,
+      importance: Importance.max,
+      icon: Constant.androidIcon,
+    );
+    const iOSPlatformChannelSpecifics = IOSNotificationDetails();
+    const platformChannelSpecifics = NotificationDetails(
+        android: androidPlatformChannelSpecifics,
+        iOS: iOSPlatformChannelSpecifics);
     await flutterLocalNotificationsPlugin.show(
-        0, 'Flutter devs', 'Flutter Local Notification Demo', platform,
-        payload: 'Welcome to the Local Notification demo ');
+        insertedId, title, '油棕收割', platformChannelSpecifics);
   }
 }
