@@ -1,5 +1,6 @@
 import UIKit
 import Flutter
+import workmanager
 
 @UIApplicationMain
 @objc class AppDelegate: FlutterAppDelegate {
@@ -14,16 +15,20 @@ import Flutter
 
     // Flutter WorkManager
     UIApplication.shared.setMinimumBackgroundFetchInterval(TimeInterval(60*15))
-    UNUserNotificationCenter.current().delegate = self
+    // Work Manager Foreground Debug Notification
+    // UNUserNotificationCenter.current().delegate = self
 
     GeneratedPluginRegistrant.register(with: self)
+    WorkmanagerPlugin.register(with: self.registrar(forPlugin: "be.tramckrijte.workmanager.WorkmanagerPlugin")!)
+    
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
 
-  override func userNotificationCenter(_ center: UNUserNotificationCenter,
-                                         willPresent notification: UNNotification,
-                                         withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
-         completionHandler(.alert) // shows banner even if app is in foreground
-     }
+  // Work Manager Foreground Debug Notification
+  // override func userNotificationCenter(_ center: UNUserNotificationCenter,
+  //                                        willPresent notification: UNNotification,
+  //                                        withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+  //        completionHandler(.alert) // shows banner even if app is in foreground
+  //    }
 
 }

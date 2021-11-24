@@ -133,6 +133,7 @@ class _LandListScreenState extends State<LandListScreen> {
         key: _formkey,
         autovalidateMode: AutovalidateMode.onUserInteraction,
         child: TextFormField(
+          enableSuggestions: false,
           controller: landController,
           style: const TextStyle(fontSize: Constant.textFormFontSize),
           onChanged: (value) {

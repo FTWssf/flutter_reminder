@@ -148,10 +148,10 @@ class NotificationService {
   Future<List> getPendingNotification() async {
     final List<PendingNotificationRequest> pendingNotificationRequests =
         await flutterLocalNotificationsPlugin.pendingNotificationRequests();
-    for (var a in pendingNotificationRequests) {
-      print(
-          'body: ${a.body} title: ${a.title} payload: ${a.payload} id: ${a.id}}');
-    }
+    // for (var a in pendingNotificationRequests) {
+    //   print(
+    //       'body: ${a.body} title: ${a.title} payload: ${a.payload} id: ${a.id}}');
+    // }
     return pendingNotificationRequests;
   }
 

@@ -89,7 +89,6 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await NotificationService().init();
   await Helper().initializeDatabase();
-  Workmanager().cancelByUniqueName("4");
 
   switch (Platform.operatingSystem) {
     case 'ios':
@@ -97,6 +96,7 @@ void main() async {
           isInDebugMode: (kReleaseMode ? false : true));
       break;
     case 'android':
+      await Workmanager().cancelByUniqueName("4");
       await Workmanager().initialize(callbackDispatcher,
           isInDebugMode: (kReleaseMode ? false : true));
       Workmanager().registerPeriodicTask(
@@ -113,6 +113,10 @@ void main() async {
 
   runApp(const App());
   // final pendingList = await NotificationService().getPendingNotification();
+  // for (var a in pendingList) {
+  //   print(
+  //       'list body: ${a.body} title: ${a.title} payload: ${a.payload} id: ${a.id}}');
+  // }
   // List<Reminder>? reminders = await ReminderHelper().getPeriodicReminder();
   // List<NotificationTable>? abc = await NotificationHelper().read();
   // if (abc != null) {

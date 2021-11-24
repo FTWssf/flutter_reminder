@@ -492,7 +492,7 @@
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
 				DEVELOPMENT_TEAM = 99NR58339K;
 				ENABLE_BITCODE = NO;
-				INFOPLIST_FILE = Runner/Info.plist;
+				INFOPLIST_FILE = "Runner/Info-Debug.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -561,8 +561,8 @@
 	};
 	rootObject = 97C146E61CF9000F007C117D /* Project object */;
 	SystemCapabilities = {
-	com.apple.BackgroundModes = {
-		enabled = 1;
+		com.apple.BackgroundModes = {
+			enabled = 1;
+		};
 	};
-};
 }
