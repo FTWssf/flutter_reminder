@@ -35,12 +35,6 @@ class _ReminderListScreenState extends State<ReminderListScreen> {
   Future<void> _fetchPage(int pageKey) async {
     try {
       final newPage = await ReminderHelper().readPagination(pageKey);
-      // final count = await ReminderHelper().count();
-      // final computedCount =
-      //     count > ReminderHelper.row ? count - ReminderHelper.row : 0;
-      // final previouslyFetchedItemsCount =
-      //     _pagingController.itemList?.length ?? 0;
-      // final isLastPage = previouslyFetchedItemsCount >= computedCount;
       bool isLastPage = false;
       final newItems = newPage ?? [];
       if (newPage == null) {

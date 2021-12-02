@@ -12,15 +12,8 @@ class ReminderHelper with ChangeNotifier {
   List<Reminder>? items = [];
   static const row = Constant.row;
 
-  ReminderHelper() {
-    // read();
-  }
-
   void read() async {
     final db = await databaseHelper.database;
-    // var objects = await db!.rawQuery(
-    //     'SELECT *, (CASE WHEN cancelled == 1 THEN 1 WHEN end_date < (date("now", "localtime")||"T00:00:00.000") THEN 1 ELSE 0 END) as cancelled FROM ${Reminder.table} '
-    //     'ORDER BY 9 asc, start_date asc');
     var objects = await db!.rawQuery('SELECT * FROM ${Reminder.table} '
         'ORDER BY cancelled asc, date asc');
     List<Reminder>? reminders = objects.isNotEmpty
@@ -33,9 +26,6 @@ class ReminderHelper with ChangeNotifier {
   Future<List<Reminder>?> readPagination(int page) async {
     final offset = (page - 1) * row;
     final db = await databaseHelper.database;
-    // var objects = await db!.rawQuery(
-    //     'SELECT *, (CASE WHEN cancelled == 1 THEN 1 WHEN end_date < (date("now", "localtime")||"T00:00:00.000") THEN 1 ELSE 0 END) as cancelled FROM ${Reminder.table} '
-    //     'ORDER BY 9 asc, start_date asc LIMIT $offset, $row');
     var objects = await db!.rawQuery(
         'SELECT *, (SELECT name FROM ${Land.table} where id = ${Reminder.table}.${Reminder.colLandId}) as land FROM ${Reminder.table} '
         'ORDER BY cancelled asc, date asc LIMIT $offset, $row');

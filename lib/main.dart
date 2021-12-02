@@ -21,42 +21,8 @@ void callbackDispatcher() {
     switch (task) {
       case 'notificationPeriodicTask':
       case Workmanager.iOSBackgroundTask:
-        final pendingList =
-            await NotificationService().getPendingNotification();
-        for (var item in pendingList) {
-          final notification = await NotificationHelper().fetch(item.id);
-          if (notification != null) {
-            if (notification.date!.isBefore(DateTime.now())) {
-              final id = notification.id ?? 0;
-              await NotificationService().cancelNotification(id);
-              await NotificationService().showNotification(item.title, id);
-            }
-          }
-        }
-
-        await NotificationService().init();
-        List<Reminder>? reminders =
-            await ReminderHelper().getPeriodicReminder();
-        DateFormat dateFormat = DateFormat("yyyy-MM-dd");
-
-        if (reminders != null) {
-          for (var reminder in reminders) {
-            final dateTime = DateTime.parse(dateFormat.format(DateTime.now()) +
-                    ' ' +
-                    (reminder.time ??= ''))
-                .add((const Duration(days: 1)));
-
-            final notification = NotificationTable(reminder.id, dateTime);
-            int insertedId = await NotificationHelper().create(notification);
-            await NotificationService()
-                .scheduleNotification(reminder, insertedId, dateTime);
-          }
-        }
-
+        await periodicTask();
         break;
-      // case Workmanager.iOSBackgroundTask:
-      //   print("The iOS background fetch was triggered");
-      //   break;
       default:
         break;
     }
@@ -65,17 +31,30 @@ void callbackDispatcher() {
   });
 }
 
-void periodicTask() async {
+Future<void> periodicTask() async {
+  await NotificationService().init();
+
+  final pendingList = await NotificationService().getPendingNotification();
+  for (var item in pendingList) {
+    final notification = await NotificationHelper().fetch(item.id);
+    if (notification != null) {
+      if (notification.date!.isBefore(DateTime.now())) {
+        final id = notification.id ?? 0;
+        await NotificationService().cancelNotification(id);
+        await NotificationService().showNotification(item.title, id);
+      }
+    }
+  }
+
   List<Reminder>? reminders = await ReminderHelper().getPeriodicReminder();
   DateFormat dateFormat = DateFormat("yyyy-MM-dd");
+
   if (reminders != null) {
     for (var reminder in reminders) {
       final dateTime = DateTime.parse(
               dateFormat.format(DateTime.now()) + ' ' + (reminder.time ??= ''))
           .add((const Duration(days: 1)));
-      // final dateTime = DateTime.parse(
-      //         dateFormat.format(reminder.date!) + ' ' + (reminder.time ??= ''))
-      //     .add((const Duration(minutes: 3)));
+
       final notification = NotificationTable(reminder.id, dateTime);
       int insertedId = await NotificationHelper().create(notification);
       await NotificationService()

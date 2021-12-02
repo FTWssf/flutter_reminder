@@ -5,8 +5,6 @@ import 'package:oil_palm_system/database/reminder_helper.dart';
 import 'package:oil_palm_system/model/reminder.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
-// import 'package:timezone/data/latest.dart' as tz;
-// import 'package:timezone/timezone.dart' as tz;
 import 'package:oil_palm_system/database/notification_helper.dart';
 import 'package:oil_palm_system/model/notification_table.dart';
 import 'package:oil_palm_system/res/constant.dart';

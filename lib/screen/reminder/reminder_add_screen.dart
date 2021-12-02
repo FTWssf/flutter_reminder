@@ -25,7 +25,6 @@ class ReminderAddScreen extends StatefulWidget {
 }
 
 class _ReminderAddScreenState extends State<ReminderAddScreen> {
-  // model_notification.Notification notification ;
   bool _isLoading = false;
   Reminder reminder = Reminder(null, null, '');
   DateFormat dateFormat = DateFormat("yyyy-MM-dd");
@@ -67,17 +66,6 @@ class _ReminderAddScreenState extends State<ReminderAddScreen> {
   void _addItem() async {
     if (_isLoading) return;
 
-    // if (notification.datetime!.isBefore(DateTime.now())) {
-    //   return showDialog(
-    //       context: context,
-    //       builder: (BuildContext context) {
-    //         return const AlertDialog(
-    //           title: Text("不能选择过去的时间"),
-    //           // content: Text("Hello World"),
-    //         );
-    //       });
-    // }
-
     if (!_formkey.currentState!.validate()) {
       return;
     }
@@ -85,10 +73,6 @@ class _ReminderAddScreenState extends State<ReminderAddScreen> {
     setState(() {
       _isLoading = true;
     });
-    //
-    // final ReminderHelper reminderHelper =
-    // Provider.of<ReminderHelper>(context, listen: false);
-    // int insertedReminderId = await reminderHelper.create(reminder);
 
     int insertedReminderId = await ReminderHelper().create(reminder);
     final dateTime = DateTime.parse(
@@ -98,19 +82,6 @@ class _ReminderAddScreenState extends State<ReminderAddScreen> {
     int insertedId = await NotificationHelper().create(notification);
     await NotificationService()
         .scheduleNotification(reminder, insertedId, dateTime);
-    // final startDate = reminder.startDate ?? DateTime.now();
-    // final daysToGenerate = reminder.endDate!.difference(startDate).inDays;
-    // for (var i = 0; i < daysToGenerate + 1; i++) {
-    //   final date = dateFormat.format(startDate.add(Duration(days: i)));
-    //   final dateTime = DateTime.parse(date + ' ' + (reminder.time ??= ''));
-    //   // final date = dateFormat.format(startDate);
-    //   // final dateTime = DateTime.parse(date + ' ' + (reminder.time ??= ''))
-    //   //     .add(Duration(minutes: i));
-    //   final notification = NotificationTable(insertedReminderId, dateTime);
-    //   int insertedId = await NotificationHelper().create(notification);
-    //   await NotificationService()
-    //       .scheduleNotification(reminder, insertedId, dateTime);
-    // }
 
     setState(() {
       _isLoading = false;
@@ -158,7 +129,7 @@ class _ReminderAddScreenState extends State<ReminderAddScreen> {
                     return const AlertDialog(title: Text("请先添加园地"));
                   });
             }
-            final result = await Picker(
+            await Picker(
                 cancelTextStyle:
                     const TextStyle(color: Colors.black54, fontSize: 16),
                 confirmTextStyle:
