@@ -1,16 +1,14 @@
-# oil_palm_system
+# flutter_reminder
 
-A new Flutter project.
+A mobile application allow user to set date&time and receive notification as reminder.
 
-## Getting Started
+## Use Case
+Developed for oil palm farmer who has multiple lands and also act as a middleman between manufacturer and smallholder to manage the lands and receive notifiation as reminder on harvest day of different lands periodically.
 
-This project is a starting point for a Flutter application.
+## Features
+1. Add land.
+2. Select a land and set date&time to receive notification (Harvest day of the land).
+3. If user didn't confirm the notification (confirm harvest on the land ), the user will continuously receive the notification of that particular land at the input time daily until they confirm it, might unable to harvest due to weather or unavailability of labor. ---(Currently Not working on iOS)
+4. If user confirm the notification, the notification will move to 14 days after which is the harvest period of oil palm.
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Demo
