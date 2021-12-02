@@ -12,3 +12,5 @@ Developed for oil palm farmer who has multiple lands and also act as a middleman
 4. If user confirm the notification, the notification will move to 14 days after which is the harvest period of oil palm.
 
 ## Demo
+https://user-images.githubusercontent.com/20774216/144360793-9ea23326-bf35-4ee2-9496-340926cec99d.mp4
+
